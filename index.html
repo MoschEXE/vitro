@@ -1,0 +1,1174 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VitroConnect Troubleshooting</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s ease;
+        }
+
+        .question-box {
+            margin-bottom: 30px;
+        }
+
+        .question-box h2 {
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: #f5f5f5;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+            font-size: 1.1em;
+        }
+
+        .option-btn:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .result-box {
+            background: #f0f8ff;
+            border-left: 5px solid #667eea;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .result-box h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .result-section {
+            margin-bottom: 20px;
+        }
+
+        .result-section h3 {
+            color: #555;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .result-section ol, .result-section ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .result-section li {
+            margin-bottom: 8px;
+        }
+
+        .tip-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .warning-box {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #17a2b8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .btn-copy {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-copy:hover {
+            background: #218838;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .breadcrumb {
+            color: #999;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+
+        code {
+            background: #f5f5f5;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 VitroConnect Troubleshooting</h1>
+            <p>Expertenwissen für deine Kollegen</p>
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar"></div>
+        </div>
+
+        <div class="breadcrumb" id="breadcrumb"></div>
+
+        <div id="content"></div>
+
+        <div class="action-buttons hidden" id="actionButtons">
+            <button class="btn btn-secondary" onclick="goBack()">← Zurück</button>
+            <button class="btn btn-primary" onclick="restart()">🔄 Von vorne</button>
+        </div>
+    </div>
+
+    <script>
+        // Decision Tree Datenstruktur
+        const decisionTree = {
+            start: {
+                question: "Welcher Provider/Anschlusstyp?",
+                options: [
+                    { text: "EWE / VitroConnect (DSL)", next: "ewe_vitro" },
+                    { text: "UGG (Glasfaser)", next: "ugg_glasfaser" }
+                ]
+            },
+            
+            // ===== EWE/VitroConnect Branch =====
+            ewe_vitro: {
+                question: "Welche Störungsart liegt vor?",
+                options: [
+                    { text: "Komplettausfall", next: "ewe_komplettausfall" },
+                    { text: "Sporadischer Ausfall", next: "ewe_sporadisch" },
+                    { text: "Anschaltung / Einrichtung", next: "ewe_anschaltung" },
+                    { text: "Performance Probleme", next: "ewe_performance" },
+                    { text: "Telefonie Probleme", next: "ewe_telefonie" }
+                ]
+            },
+
+            ewe_komplettausfall: {
+                question: "Hat die Leitung im VitroConnect-Tool eine aktive Session?",
+                options: [
+                    { text: "Ja, Session aktiv", next: "ewe_ka_session_ja" },
+                    { text: "Nein, keine Session", next: "ewe_ka_session_nein" }
+                ]
+            },
+
+            ewe_ka_session_ja: {
+                question: "Zeigt TITAN HDM Daten vom Router?",
+                options: [
+                    { text: "Ja, HDM sichtbar", next: "result_ewe_ka_hdm_ok" },
+                    { text: "Nein, kein HDM", next: "result_ewe_ka_no_hdm" }
+                ]
+            },
+
+            ewe_ka_session_nein: {
+                question: "Wie ist der Port-Status im VitroConnect-Tool?",
+                options: [
+                    { text: "Port UP", next: "ewe_ka_port_up" },
+                    { text: "Port DOWN", next: "result_ewe_ka_port_down" }
+                ]
+            },
+
+            ewe_ka_port_up: {
+                question: "Wie ist der Line-Status?",
+                options: [
+                    { text: "Line UP", next: "result_ewe_ka_line_up" },
+                    { text: "Line DOWN", next: "result_ewe_ka_line_down" }
+                ]
+            },
+
+            // ===== UGG Glasfaser Branch =====
+            ugg_glasfaser: {
+                question: "Welche Störungsart liegt vor?",
+                options: [
+                    { text: "Komplettausfall", next: "ugg_komplettausfall" },
+                    { text: "Sporadischer Ausfall", next: "ugg_sporadisch" },
+                    { text: "Anschaltung / Einrichtung", next: "ugg_anschaltung" },
+                    { text: "Performance Probleme", next: "ugg_performance" },
+                    { text: "Telefonie Probleme", next: "ugg_telefonie" }
+                ]
+            },
+
+            ugg_komplettausfall: {
+                question: "Welche Router-Konfiguration liegt vor?",
+                options: [
+                    { text: "Mit ONT (Standard)", next: "ugg_ka_mit_ont" },
+                    { text: "Direktanschluss (FB5590/5530 ohne ONT)", next: "ugg_ka_direkt" }
+                ]
+            },
+
+            ugg_ka_mit_ont: {
+                question: "Wie ist der ONT-Status im VitroConnect-Tool?",
+                options: [
+                    { text: "ONT UP", next: "ugg_ka_ont_up" },
+                    { text: "ONT DOWN", next: "result_ugg_ka_ont_down" }
+                ]
+            },
+
+            ugg_ka_ont_up: {
+                question: "Hat die Leitung eine aktive PPPoE-Session?",
+                options: [
+                    { text: "Ja, Session aktiv", next: "ugg_ka_session_ja" },
+                    { text: "Nein, keine Session", next: "result_ugg_ka_no_session" }
+                ]
+            },
+
+            ugg_ka_session_ja: {
+                question: "Zeigt TITAN HDM Daten vom Router?",
+                options: [
+                    { text: "Ja, HDM sichtbar", next: "result_ugg_ka_hdm_ok" },
+                    { text: "Nein, kein HDM", next: "result_ugg_ka_no_hdm" }
+                ]
+            },
+
+            ugg_ka_direkt: {
+                question: "Ist die ONT-Installationskennung korrekt hinterlegt?",
+                options: [
+                    { text: "Ja, OVK korrekt", next: "ugg_ka_direkt_ovk_ok" },
+                    { text: "Nein / Nicht sicher", next: "result_ugg_ka_direkt_ovk_fehlt" }
+                ]
+            },
+
+            ugg_ka_direkt_ovk_ok: {
+                question: "Hat die Leitung eine aktive PPPoE-Session?",
+                options: [
+                    { text: "Ja, Session aktiv", next: "result_ugg_ka_direkt_session_ok" },
+                    { text: "Nein, keine Session", next: "result_ugg_ka_direkt_no_session" }
+                ]
+            },
+
+            // ===== Sporadische Ausfälle =====
+            ewe_sporadisch: {
+                question: "Tritt der Ausfall zu bestimmten Zeiten auf?",
+                options: [
+                    { text: "Ja, zu bestimmten Zeiten", next: "result_ewe_sporadisch_zeitabhängig" },
+                    { text: "Nein, unregelmäßig", next: "result_ewe_sporadisch_unregelmäßig" }
+                ]
+            },
+
+            ugg_sporadisch: {
+                question: "Sind Sync-Abbrüche im VitroConnect-Tool sichtbar?",
+                options: [
+                    { text: "Ja, Sync-Abbrüche erkennbar", next: "result_ugg_sporadisch_sync" },
+                    { text: "Nein, Leitung stabil", next: "result_ugg_sporadisch_stabil" }
+                ]
+            },
+
+            // ===== Anschaltung =====
+            ewe_anschaltung: {
+                question: "Ist die Leitung bereits aktiv geschaltet?",
+                options: [
+                    { text: "Ja, laut System aktiv", next: "result_ewe_anschaltung_aktiv" },
+                    { text: "Nein, noch in Bereitstellung", next: "result_ewe_anschaltung_offen" }
+                ]
+            },
+
+            ugg_anschaltung: {
+                question: "Mit oder ohne ONT?",
+                options: [
+                    { text: "Mit ONT", next: "ugg_anschaltung_ont" },
+                    { text: "Direktanschluss (FB5590/5530)", next: "result_ugg_anschaltung_direkt" }
+                ]
+            },
+
+            ugg_anschaltung_ont: {
+                question: "Zeigt der ONT Status-LEDs?",
+                options: [
+                    { text: "Ja, ONT hat Power/Status LEDs", next: "result_ugg_anschaltung_ont_ok" },
+                    { text: "Nein, ONT tot/keine LEDs", next: "result_ugg_anschaltung_ont_tot" }
+                ]
+            },
+
+            // ===== Performance =====
+            ewe_performance: {
+                question: "Wie äußert sich das Performance-Problem?",
+                options: [
+                    { text: "Niedrige Geschwindigkeit", next: "result_ewe_perf_speed" },
+                    { text: "Hohe Latenz / Paketverluste", next: "result_ewe_perf_latency" }
+                ]
+            },
+
+            ugg_performance: {
+                question: "Ist die gebuchte Geschwindigkeit korrekt im System?",
+                options: [
+                    { text: "Ja, Tarif korrekt", next: "result_ugg_perf_tarif_ok" },
+                    { text: "Nein, Tarif falsch/unklar", next: "result_ugg_perf_tarif_falsch" }
+                ]
+            },
+
+            // ===== Telefonie =====
+            ewe_telefonie: {
+                question: "Welches Telefonie-Problem liegt vor?",
+                options: [
+                    { text: "Kann nicht angerufen werden", next: "result_ewe_tel_eingehend" },
+                    { text: "Kann nicht raus telefonieren", next: "result_ewe_tel_ausgehend" },
+                    { text: "Schlechte Sprachqualität", next: "result_ewe_tel_qualität" }
+                ]
+            },
+
+            ugg_telefonie: {
+                question: "Welches Telefonie-Problem liegt vor?",
+                options: [
+                    { text: "Kann nicht angerufen werden", next: "result_ugg_tel_eingehend" },
+                    { text: "Kann nicht raus telefonieren", next: "result_ugg_tel_ausgehend" },
+                    { text: "Schlechte Sprachqualität", next: "result_ugg_tel_qualität" }
+                ]
+            },
+
+            // ===== RESULTS =====
+
+            // EWE Results
+            result_ewe_ka_hdm_ok: {
+                result: {
+                    title: "✅ Router Online - Kundenseitiges Problem",
+                    steps: [
+                        "Kunde anrufen und Situation abklären",
+                        "Prüfen lassen: Alle Geräte offline? Einzelne Geräte?",
+                        "Router-Neustart durchführen lassen",
+                        "WLAN-Verbindung prüfen (SSID sichtbar? Passwort korrekt?)",
+                        "LAN-Verbindung testen (wenn möglich)",
+                        "Bei weiterhin NOK: Werksreset des Routers erwägen"
+                    ],
+                    ticket: "Ticket schließen mit: 'Router online, HDM verfügbar. Kundenseitige Verkabelung/Konfiguration geprüft. NOK behoben / Kunde informiert.'",
+                    tips: [
+                        "💡 HDM zeigt, dass Router mit Backend kommuniziert = Internet funktioniert grundsätzlich",
+                        "💡 Oft sind es WLAN-Probleme oder falsche Kabel"
+                    ]
+                }
+            },
+
+            result_ewe_ka_no_hdm: {
+                result: {
+                    title: "⚠️ Session aktiv, aber kein HDM",
+                    steps: [
+                        "Kunde anrufen",
+                        "Router-Neustart durchführen lassen (mind. 30 Sek. vom Strom)",
+                        "Nach 5 Min. erneut HDM prüfen",
+                        "Wenn HDM wieder da: Ticket schließen",
+                        "Wenn weiterhin kein HDM: Zum Router-Tausch eskalieren"
+                    ],
+                    ticket: "Bei Eskalation: 'Session vorhanden, aber kein HDM nach Reboot. Router defekt vermutet.'",
+                    warnings: [
+                        "⚠️ Keine Leitung-Entstörung notwendig, da Session läuft!",
+                        "⚠️ Nicht an Lineowner weiterleiten!"
+                    ]
+                }
+            },
+
+            result_ewe_ka_port_down: {
+                result: {
+                    title: "🔴 Port DOWN - Leitungsstörung",
+                    steps: [
+                        "Port-Reset im VitroConnect-Tool durchführen",
+                        "5 Minuten warten",
+                        "Status erneut prüfen",
+                        "Wenn weiterhin DOWN: Ticket an EWE/VitroConnect mit Techniker-Termin"
+                    ],
+                    ticket: "Störungsbeschreibung: 'Port DOWN nach Reset. Line-ID: [LineID]. Techniker-Termin erforderlich.'",
+                    tips: [
+                        "💡 Port DOWN = Problem in der Vermittlungsstelle oder auf der Leitung",
+                        "💡 Immer Port-Reset versuchen, bevor eskaliert wird!"
+                    ],
+                    contact: "☎️ Kunde anrufen für Terminvereinbarung (Techniker muss ggf. in Wohnung)"
+                }
+            },
+
+            result_ewe_ka_line_up: {
+                result: {
+                    title: "🔧 Line UP, aber keine Session",
+                    steps: [
+                        "Kunde anrufen",
+                        "Router-Zugangsdaten prüfen lassen (Benutzername/Passwort)",
+                        "Router-Neustart durchführen",
+                        "Wenn PPPoE-Fehler: Zugangsdaten neu eingeben lassen",
+                        "Alternative: Router-Werksreset + Neueinrichtung"
+                    ],
+                    ticket: "Bei NOK nach 2 Versuchen: 'Line UP, PPPoE-Authentifizierung fehlgeschlagen. Zugangsdaten geprüft. Router-Tausch empfohlen.'",
+                    tips: [
+                        "💡 Line UP = Leitung ist physisch OK",
+                        "💡 Problem liegt meist an falschen Zugangsdaten oder Router-Defekt"
+                    ]
+                }
+            },
+
+            result_ewe_ka_line_down: {
+                result: {
+                    title: "🔴 Line DOWN - Schwere Leitungsstörung",
+                    steps: [
+                        "Line-Reset im VitroConnect-Tool durchführen",
+                        "10 Minuten warten (DSL-Sync braucht Zeit)",
+                        "Status erneut prüfen",
+                        "Wenn weiterhin DOWN: Sofort an EWE/VitroConnect eskalieren"
+                    ],
+                    ticket: "Störungsbeschreibung: 'Line DOWN nach Reset. Keine Synchronisation. Line-ID: [LineID]. DRINGEND - Techniker-Termin erforderlich.'",
+                    warnings: [
+                        "⚠️ Line DOWN = Ernste Störung (Kabelbruch, Vermittlungsstelle)",
+                        "⚠️ Kunde kann NICHTS selbst tun - nur Techniker hilft!"
+                    ],
+                    contact: "☎️ Kunde anrufen: Techniker-Besuch zwingend notwendig"
+                }
+            },
+
+            // UGG Glasfaser Results
+            result_ugg_ka_ont_down: {
+                result: {
+                    title: "🔴 ONT DOWN - Glasfaser-Problem",
+                    steps: [
+                        "Port-Reset im VitroConnect-Tool durchführen",
+                        "5 Minuten warten",
+                        "ONT-Status erneut prüfen",
+                        "Wenn weiterhin DOWN: Ticket OHNE Termin an UGG"
+                    ],
+                    ticket: "Störungsbeschreibung: 'ONT DOWN nach Port-Reset. Line-ID: [LineID]. Keine Synchronisation zum OLT. Glasfaser-Leitung prüfen.'",
+                    tips: [
+                        "💡 ONT DOWN = Problem auf Glasfaser-Strecke oder im OLT",
+                        "💡 KEIN Techniker-Termin - UGG prüft erst Leitung remote!",
+                        "💡 Oft innerhalb 24h gelöst durch Backend-Fixes"
+                    ],
+                    info: "ℹ️ Kunde informieren: 'Störung auf Glasfaser-Leitung erkannt. Wird von Provider geprüft, kein Termin notwendig. Update folgt.'"
+                }
+            },
+
+            result_ugg_ka_no_session: {
+                result: {
+                    title: "🔧 ONT UP, aber keine PPPoE-Session",
+                    steps: [
+                        "Kunde anrufen",
+                        "Router-Zugangsdaten kontrollieren lassen",
+                        "Verkabelung prüfen: ONT LAN → Router WAN-Port?",
+                        "Router-Neustart durchführen",
+                        "ONT-Stromreset (30 Sek. vom Strom)",
+                        "Wenn weiterhin NOK: Port-Reset durchführen"
+                    ],
+                    ticket: "Wenn nach allen Schritten NOK: 'ONT UP, PPPoE-Fehler persistiert. Zugangsdaten und Verkabelung korrekt. Eskalation an UGG für Backend-Prüfung.'",
+                    tips: [
+                        "💡 ONT UP = Glasfaser ist OK",
+                        "💡 Problem meist: Falsche Zugangsdaten oder Router-Konfiguration",
+                        "💡 Seltener: Backend-Problem bei UGG"
+                    ]
+                }
+            },
+
+            result_ugg_ka_hdm_ok: {
+                result: {
+                    title: "✅ Router Online - Kundenseitiges Problem",
+                    steps: [
+                        "Kunde anrufen und Situation abklären",
+                        "Prüfen: Alle Geräte offline? Nur bestimmte?",
+                        "Router-Neustart durchführen lassen",
+                        "WLAN-Verbindung prüfen",
+                        "LAN-Test durchführen lassen",
+                        "Bei NOK: Werksreset erwägen"
+                    ],
+                    ticket: "Ticket schließen: 'Router online, HDM verfügbar. Kundenseitige Konfiguration geprüft. NOK behoben.'",
+                    tips: [
+                        "💡 HDM vorhanden = Internet funktioniert!",
+                        "💡 Problem liegt definitiv beim Kunden (Gerät/WLAN/Verkabelung)"
+                    ]
+                }
+            },
+
+            result_ugg_ka_no_hdm: {
+                result: {
+                    title: "⚠️ Session aktiv, aber kein HDM",
+                    steps: [
+                        "Kunde anrufen",
+                        "Router-Neustart (mind. 30 Sek. vom Strom)",
+                        "Nach 5 Min. HDM erneut prüfen",
+                        "Wenn HDM da: Ticket schließen",
+                        "Wenn nicht: Router-Tausch veranlassen"
+                    ],
+                    ticket: "Bei Eskalation: 'Session vorhanden, kein HDM nach Reboot. Router-Defekt vermutet. Tausch erforderlich.'",
+                    warnings: [
+                        "⚠️ NICHT an UGG eskalieren - Session läuft ja!",
+                        "⚠️ Router ist das Problem, nicht die Leitung!"
+                    ]
+                }
+            },
+
+            result_ugg_ka_direkt_ovk_fehlt: {
+                result: {
+                    title: "⚠️ ONT-Installationskennung fehlt/falsch",
+                    steps: [
+                        "ONT-Installationskennung (OVK) im VitroConnect-Tool prüfen",
+                        "Auf Router-Aufkleber schauen: 'Installations-ID' oder 'ONT S/N'",
+                        "Wenn abweichend: OVK im System korrigieren (dauert ~15 Min. bis aktiv)",
+                        "Router-Neustart durchführen lassen",
+                        "Nach 15 Min. Session-Status prüfen"
+                    ],
+                    ticket: "Wenn OVK korrigiert: 'ONT-Installationskennung korrigiert. Session aufgebaut. Ticket geschlossen.'",
+                    tips: [
+                        "💡 Bei Direktanschluss (FB5590/5530) MUSS die OVK stimmen!",
+                        "💡 Router verhält sich wie ein ONT - daher wird S/N benötigt",
+                        "💡 Falsche OVK = Router wird vom OLT nicht erkannt"
+                    ],
+                    warnings: [
+                        "⚠️ OVK-Änderung dauert bis zu 15 Minuten!",
+                        "⚠️ Kunde muss Router danach neu starten!"
+                    ]
+                }
+            },
+
+            result_ugg_ka_direkt_session_ok: {
+                result: {
+                    title: "✅ Direktanschluss funktioniert",
+                    steps: [
+                        "Kunde anrufen",
+                        "Problem genauer abfragen",
+                        "Wie bei normalem Router vorgehen (siehe 'Router Online')",
+                        "Ticket schließen nach Entstörung"
+                    ],
+                    ticket: "Ticket schließen: 'Direktanschluss (FB5590/5530) funktioniert. OVK korrekt, Session aktiv. Kundenseitiges Problem behoben.'",
+                    tips: [
+                        "💡 Direktanschluss funktioniert wie normaler Router",
+                        "💡 Nur Unterschied: OVK muss stimmen"
+                    ]
+                }
+            },
+
+            result_ugg_ka_direkt_no_session: {
+                result: {
+                    title: "🔧 Direktanschluss: Keine Session",
+                    steps: [
+                        "OVK im System prüfen (siehe 'OVK fehlt')",
+                        "Wenn OVK korrekt: Port-Reset durchführen",
+                        "15 Minuten warten",
+                        "Router-Neustart beim Kunden",
+                        "Wenn weiterhin NOK: An UGG eskalieren"
+                    ],
+                    ticket: "Eskalation: 'Direktanschluss FB5590/5530. OVK korrekt hinterlegt. Keine PPPoE-Session nach Port-Reset. Backend-Prüfung erforderlich.'",
+                    tips: [
+                        "💡 Bei Direktanschluss öfter Backend-Probleme",
+                        "💡 OVK muss 100% korrekt sein - sonst keine Chance!"
+                    ]
+                }
+            },
+
+            // Sporadisch Results
+            result_ewe_sporadisch_zeitabhängig: {
+                result: {
+                    title: "📊 Zeitabhängige Ausfälle",
+                    steps: [
+                        "Log-Analyse im VitroConnect-Tool (Sync-Abbrüche?)",
+                        "Zeiten mit Kunde abgleichen",
+                        "Wenn Muster erkennbar: An EWE mit detaillierter Zeitangabe",
+                        "Kunde bitten, Störungszeiten zu dokumentieren"
+                    ],
+                    ticket: "Störungsbeschreibung: 'Sporadische Ausfälle zu folgenden Zeiten: [Zeiten]. Sync-Abbrüche im Log erkennbar. Leitungsprüfung erforderlich.'",
+                    tips: [
+                        "💡 Zeitabhängig deutet auf externe Störquelle hin (z.B. Nachbar, Stromnetz)",
+                        "💡 Techniker-Termin meist erforderlich zur Messung vor Ort"
+                    ]
+                }
+            },
+
+            result_ewe_sporadisch_unregelmäßig: {
+                result: {
+                    title: "🔄 Unregelmäßige Ausfälle",
+                    steps: [
+                        "Kunde nach Häufigkeit fragen (täglich? wöchentlich?)",
+                        "Router-Logs sichern lassen (falls möglich)",
+                        "Verkabelung prüfen lassen (lose Kabel?)",
+                        "Bei häufig: An EWE mit 'Intermittierend'-Vermerk"
+                    ],
+                    ticket: "Störungsbeschreibung: 'Sporadische Ausfälle ohne Muster. Häufigkeit: [X]. Verkabelung geprüft OK. Leitungsmessung erforderlich.'",
+                    tips: [
+                        "💡 Schwierig zu analysieren - Kunde muss mithelfen",
+                        "💡 Oft hilft nur Langzeit-Monitoring durch Lineowner"
+                    ]
+                }
+            },
+
+            result_ugg_sporadisch_sync: {
+                result: {
+                    title: "🔴 Sync-Abbrüche erkennbar",
+                    steps: [
+                        "Timestamps der Abbrüche notieren",
+                        "Kunde fragen: ONT-LEDs blinken während Ausfall?",
+                        "Wenn ja: Glasfaser-Problem → An UGG OHNE Termin",
+                        "Wenn nein: Router-Problem → Router-Tausch"
+                    ],
+                    ticket: "An UGG: 'Regelmäßige Sync-Abbrüche. Timestamps: [Zeiten]. ONT-Status während Ausfall: [UP/DOWN]. Leitungsprüfung erforderlich.'",
+                    tips: [
+                        "💡 Sync-Abbrüche im Log = Beweisbar!",
+                        "💡 UGG kann dann gezielt die Leitung prüfen"
+                    ]
+                }
+            },
+
+            result_ugg_sporadisch_stabil: {
+                result: {
+                    title: "✅ Leitung stabil, kein Log-Eintrag",
+                    steps: [
+                        "Mit Kunde telefonisch Situation durchgehen",
+                        "Was genau passiert? (Komplett offline? Nur langsam?)",
+                        "WLAN-Probleme ausschließen (5GHz vs. 2.4GHz)",
+                        "Andere Geräte testen lassen",
+                        "Bei Router-Verdacht: Tausch veranlassen"
+                    ],
+                    ticket: "Ticket schließen: 'Leitung laut Monitoring stabil. Keine Sync-Abbrüche. Kundenseitige Überprüfung durchgeführt. Problem nicht reproduzierbar.'",
+                    tips: [
+                        "💡 Wenn keine Sync-Abbrüche im Log: Meist KEIN Leitungsproblem",
+                        "💡 Oft WLAN-Reichweite oder Geräte-Problem"
+                    ]
+                }
+            },
+
+            // Anschaltung Results
+            result_ewe_anschaltung_aktiv: {
+                result: {
+                    title: "🆕 Anschaltung aktiv",
+                    steps: [
+                        "Port- und Line-Status wie bei Komplettausfall prüfen",
+                        "Wenn UP: Kunde Router-Zugangsdaten einrichten lassen",
+                        "Schritt-für-Schritt telefonisch begleiten",
+                        "Nach erfolgreicher Einrichtung: Ticket schließen"
+                    ],
+                    ticket: "Ticket schließen: 'Neuanschaltung erfolgreich. Leitung aktiv. Router konfiguriert. Kunde online.'",
+                    tips: [
+                        "💡 Bei Neuanschaltung sind Zugangsdaten oft das Problem",
+                        "💡 Geduld haben - Kunde kennt Router oft noch nicht!"
+                    ]
+                }
+            },
+
+            result_ewe_anschaltung_offen: {
+                result: {
+                    title: "⏳ Anschaltung noch nicht abgeschlossen",
+                    steps: [
+                        "Schalttermin im System prüfen",
+                        "Kunde über Status informieren",
+                        "Wenn Schalttermin überschritten: An EWE eskalieren",
+                        "Wenn Termin noch offen: Ticket auf 'Wartend' setzen"
+                    ],
+                    ticket: "Bei Eskalation: 'Schalttermin [Datum] überschritten. Leitung weiterhin nicht aktiv. Prüfung und Eskalation erforderlich.'",
+                    info: "ℹ️ Kunde informieren: 'Schaltung ist für [Datum] geplant. Aktuell noch in Bearbeitung beim Lineowner.'"
+                }
+            },
+
+            result_ugg_anschaltung_ont_ok: {
+                result: {
+                    title: "✅ ONT zeigt LEDs - Hardware OK",
+                    steps: [
+                        "ONT-Status im VitroConnect-Tool prüfen (siehe Komplettausfall)",
+                        "Wenn ONT UP: Router-Konfiguration mit Kunde durchgehen",
+                        "Zugangsdaten einrichten",
+                        "Nach Erfolg: Ticket schließen"
+                    ],
+                    ticket: "Ticket schließen: 'Neuanschaltung Glasfaser erfolgreich. ONT online, Router konfiguriert. Kunde online.'",
+                    tips: [
+                        "💡 LEDs am ONT = Hardware funktioniert",
+                        "💡 Dann wie normale Entstörung vorgehen"
+                    ]
+                }
+            },
+
+            result_ugg_anschaltung_ont_tot: {
+                result: {
+                    title: "🔌 ONT ohne LEDs - Hardware-Problem",
+                    steps: [
+                        "Kunde Stromversorgung prüfen lassen (Netzteil eingesteckt?)",
+                        "Anderes Netzteil testen lassen (falls vorhanden)",
+                        "Wenn weiterhin tot: Defekter ONT → Austausch veranlassen",
+                        "Techniker-Termin für ONT-Tausch"
+                    ],
+                    ticket: "Störungsbeschreibung: 'Neuanschaltung. ONT zeigt keine LEDs. Stromversorgung geprüft. ONT defekt vermutet. Austausch erforderlich.'",
+                    warnings: [
+                        "⚠️ ONT gehört dem Lineowner - WIR tauschen nicht!",
+                        "⚠️ Techniker-Termin zwingend notwendig"
+                    ],
+                    contact: "☎️ Termin mit Kunde vereinbaren für ONT-Tausch"
+                }
+            },
+
+            result_ugg_anschaltung_direkt: {
+                result: {
+                    title: "🔧 Direktanschluss-Neuanschaltung",
+                    steps: [
+                        "OVK im System prüfen (Router S/N auf Aufkleber)",
+                        "Wenn nicht hinterlegt: OVK eintragen",
+                        "15 Minuten warten",
+                        "Router-Zugangsdaten mit Kunde konfigurieren",
+                        "Nach Erfolg: Ticket schließen"
+                    ],
+                    ticket: "Ticket schließen: 'Neuanschaltung Direktanschluss FB5590/5530. OVK korrekt hinterlegt. Router konfiguriert. Kunde online.'",
+                    tips: [
+                        "💡 Bei Neuanschaltung ist OVK oft noch nicht im System!",
+                        "💡 Immer als erstes prüfen bei Direktanschluss!"
+                    ],
+                    warnings: [
+                        "⚠️ OVK-Eintragung dauert bis zu 15 Minuten!",
+                        "⚠️ Kunde muss warten, bevor es funktioniert"
+                    ]
+                }
+            },
+
+            // Performance Results
+            result_ewe_perf_speed: {
+                result: {
+                    title: "🐌 Niedrige Geschwindigkeit",
+                    steps: [
+                        "Gebuchte Geschwindigkeit vs. Line-Speed im Tool prüfen",
+                        "Speedtest mit Kunde durchführen (LAN-Kabel!)",
+                        "WLAN ausschließen (oft Ursache für langsam)",
+                        "Wenn LAN auch langsam: Line-Speed prüfen",
+                        "Bei niedrigem Line-Speed: An EWE eskalieren"
+                    ],
+                    ticket: "Bei Eskalation: 'Performance-Problem. Gebuchte Geschwindigkeit: [X] Mbit/s. Line-Speed: [Y] Mbit/s. Speedtest LAN: [Z] Mbit/s. Leitungsprüfung erforderlich.'",
+                    tips: [
+                        "💡 IMMER LAN-Test machen - WLAN ist meist der Flaschenhals!",
+                        "💡 Line-Speed < 80% der gebuchten Speed = Leitungsproblem"
+                    ],
+                    info: "ℹ️ Speedtest-Empfehlung: speedtest.net oder fast.com, mehrfach testen!"
+                }
+            },
+
+            result_ewe_perf_latency: {
+                result: {
+                    title: "📶 Hohe Latenz / Paketverluste",
+                    steps: [
+                        "Mit Kunde Ping-Test durchführen (zu 8.8.8.8)",
+                        "Paketverluste erkennbar?",
+                        "Wenn ja: An EWE mit 'Intermittierend'-Vermerk",
+                        "Wenn nein, aber hohe Latenz: Leitungsprüfung"
+                    ],
+                    ticket: "Störungsbeschreibung: 'Hohe Latenz [X ms] / Paketverluste [Y%]. Ping-Test durchgeführt. Leitungsqualität unzureichend.'",
+                    tips: [
+                        "💡 Paketverluste = Ernstes Problem, immer eskalieren!",
+                        "💡 Latenz >50ms bei DSL = Auffällig"
+                    ]
+                }
+            },
+
+            result_ugg_perf_tarif_ok: {
+                result: {
+                    title: "🐌 Tarif korrekt, trotzdem langsam",
+                    steps: [
+                        "Speedtest mit Kunde (LAN!)",
+                        "WLAN ausschließen",
+                        "Bei Glasfaser: Volle Geschwindigkeit sollte ankommen",
+                        "Wenn deutlich weniger: Port-Reset durchführen",
+                        "Wenn weiterhin langsam: An UGG eskalieren"
+                    ],
+                    ticket: "Bei Eskalation: 'Glasfaser Performance-Problem. Tarif: [X] Mbit/s. Speedtest LAN: [Y] Mbit/s. Port-Reset durchgeführt ohne Erfolg. Backend-Prüfung erforderlich.'",
+                    tips: [
+                        "💡 Glasfaser sollte IMMER volle Geschwindigkeit liefern!",
+                        "💡 Wenn nicht: Backend-Problem oder Router-Defekt"
+                    ],
+                    warnings: [
+                        "⚠️ Bei Glasfaser gibt es keine 'Leitungsdämpfung' wie DSL!",
+                        "⚠️ Entweder volle Speed oder gar nichts"
+                    ]
+                }
+            },
+
+            result_ugg_perf_tarif_falsch: {
+                result: {
+                    title: "⚠️ Tarif nicht korrekt im System",
+                    steps: [
+                        "Vertrag im System prüfen",
+                        "Mit VitroConnect-Tool abgleichen",
+                        "Wenn abweichend: Tarif-Korrektur veranlassen",
+                        "Nach Korrektur: Port-Reset",
+                        "Speedtest mit Kunde nach 15 Min."
+                    ],
+                    ticket: "Ticket schließen nach Korrektur: 'Tarif im System korrigiert. Port-Reset durchgeführt. Geschwindigkeit jetzt korrekt.'",
+                    tips: [
+                        "💡 Falsche Tarif-Hinterlegung = häufiger Fehler bei UGG!",
+                        "💡 Immer mit Vertrag abgleichen"
+                    ]
+                }
+            },
+
+            // Telefonie Results
+            result_ewe_tel_eingehend: {
+                result: {
+                    title: "📞 Eingehende Anrufe funktionieren nicht",
+                    steps: [
+                        "Rufnummer im System prüfen (korrekt hinterlegt?)",
+                        "Telefon-Registrierung im Router prüfen",
+                        "Test: Kunde selbst anrufen",
+                        "Wenn besetzt/nicht erreichbar: Router-Neustart",
+                        "Wenn weiterhin NOK: An VoIP-Team eskalieren"
+                    ],
+                    ticket: "Bei Eskalation: 'Eingehende Telefonie NOK. Rufnummer: [Nummer]. Registrierung: [OK/NOK]. Test-Anruf durchgeführt: [Ergebnis].'",
+                    tips: [
+                        "💡 Oft ist Telefon-Registrierung im Router das Problem",
+                        "💡 Router-Neustart hilft in 70% der Fälle!"
+                    ]
+                }
+            },
+
+            result_ewe_tel_ausgehend: {
+                result: {
+                    title: "📞 Ausgehende Anrufe funktionieren nicht",
+                    steps: [
+                        "SIP-Zugangsdaten im Router prüfen",
+                        "Test: Kunde eine bekannte Nummer anrufen lassen",
+                        "Fehlercode? (z.B. '403 Forbidden', '404 Not Found')",
+                        "Router-Neustart",
+                        "Wenn weiterhin NOK: An VoIP-Team"
+                    ],
+                    ticket: "Bei Eskalation: 'Ausgehende Telefonie NOK. SIP-Fehlercode: [Code]. Router-Neustart ohne Erfolg. VoIP-Prüfung erforderlich.'",
+                    tips: [
+                        "💡 SIP-Fehler deuten auf Registrierungs-Problem hin",
+                        "💡 Seltener: Backend-Problem bei VoIP-Provider"
+                    ]
+                }
+            },
+
+            result_ewe_tel_qualität: {
+                result: {
+                    title: "📞 Schlechte Sprachqualität",
+                    steps: [
+                        "Art der Störung: Echo? Rauschen? Abbrüche?",
+                        "Andere Telefon testen lassen (Hardware-Defekt?)",
+                        "Wenn Internet-Performance schlecht: Zuerst entstören",
+                        "Wenn Internet OK: An VoIP-Team mit Beschreibung"
+                    ],
+                    ticket: "Bei Eskalation: 'Sprachqualität mangelhaft. Symptome: [Echo/Rauschen/Abbrüche]. Hardware-Tausch durchgeführt: [Ja/Nein]. Internet-Performance: [OK/NOK].'",
+                    tips: [
+                        "💡 Sprachqualität hängt oft mit Internet-Performance zusammen",
+                        "💡 Erst Internet entstören, dann Telefonie!"
+                    ]
+                }
+            },
+
+            result_ugg_tel_eingehend: {
+                result: {
+                    title: "📞 Eingehende Anrufe NOK (Glasfaser)",
+                    steps: [
+                        "Wie bei EWE vorgehen (siehe dort)",
+                        "Zusätzlich: ONT-Status prüfen (falls vorhanden)",
+                        "VoIP läuft über Internet - also Internet-Check first!"
+                    ],
+                    ticket: "Bei Eskalation wie EWE, zusätzlich: 'Anschlusstyp: UGG Glasfaser. ONT-Status: [UP/DOWN].'",
+                    tips: [
+                        "💡 Bei Glasfaser gelten gleiche VoIP-Regeln wie DSL",
+                        "💡 Internet muss funktionieren, sonst keine Telefonie!"
+                    ]
+                }
+            },
+
+            result_ugg_tel_ausgehend: {
+                result: {
+                    title: "📞 Ausgehende Anrufe NOK (Glasfaser)",
+                    steps: [
+                        "Wie bei EWE vorgehen (siehe dort)",
+                        "Internet-Check durchführen",
+                        "Bei Internet OK: An VoIP-Team"
+                    ],
+                    ticket: "Bei Eskalation wie EWE, zusätzlich: 'Anschlusstyp: UGG Glasfaser.'",
+                    tips: [
+                        "💡 Gleiches Vorgehen wie bei DSL"
+                    ]
+                }
+            },
+
+            result_ugg_tel_qualität: {
+                result: {
+                    title: "📞 Sprachqualität schlecht (Glasfaser)",
+                    steps: [
+                        "Wie bei EWE vorgehen",
+                        "Bei Glasfaser sollte Qualität eigentlich perfekt sein",
+                        "Wenn nicht: Verdacht auf Router-Problem oder VoIP-Backend"
+                    ],
+                    ticket: "Bei Eskalation wie EWE.",
+                    tips: [
+                        "💡 Glasfaser = Beste Qualität, sollte keine Probleme geben",
+                        "💡 Wenn doch: Meist Router-Defekt"
+                    ]
+                }
+            }
+        };
+
+        // State Management
+        let currentStep = 'start';
+        let history = [];
+
+        // Navigation Functions
+        function navigate(nextStep) {
+            history.push(currentStep);
+            currentStep = nextStep;
+            render();
+        }
+
+        function goBack() {
+            if (history.length > 0) {
+                currentStep = history.pop();
+                render();
+            }
+        }
+
+        function restart() {
+            currentStep = 'start';
+            history = [];
+            render();
+        }
+
+        // Render Function
+        function render() {
+            const content = document.getElementById('content');
+            const actionButtons = document.getElementById('actionButtons');
+            const breadcrumb = document.getElementById('breadcrumb');
+            const step = decisionTree[currentStep];
+
+            // Update Progress Bar
+            const progress = (history.length / 5) * 100;
+            document.getElementById('progressBar').style.width = Math.min(progress, 100) + '%';
+
+            // Update Breadcrumb
+            breadcrumb.textContent = `Schritt ${history.length + 1}`;
+
+            // Show/Hide Action Buttons
+            if (history.length > 0) {
+                actionButtons.classList.remove('hidden');
+            } else {
+                actionButtons.classList.add('hidden');
+            }
+
+            // Render Content
+            if (step.result) {
+                renderResult(step.result);
+            } else {
+                renderQuestion(step);
+            }
+        }
+
+        function renderQuestion(step) {
+            const content = document.getElementById('content');
+            
+            let html = `
+                <div class="question-box">
+                    <h2>${step.question}</h2>
+                    <div class="options">
+            `;
+
+            step.options.forEach(option => {
+                html += `
+                    <button class="option-btn" onclick="navigate('${option.next}')">
+                        ${option.text}
+                    </button>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+            content.innerHTML = html;
+        }
+
+        function renderResult(result) {
+            const content = document.getElementById('content');
+            
+            let html = `
+                <div class="result-box">
+                    <h2>${result.title}</h2>
+            `;
+
+            // Steps
+            if (result.steps) {
+                html += `
+                    <div class="result-section">
+                        <h3>📋 Handlungsschritte:</h3>
+                        <ol>
+                `;
+                result.steps.forEach(step => {
+                    html += `<li>${step}</li>`;
+                });
+                html += `
+                        </ol>
+                    </div>
+                `;
+            }
+
+            // Ticket Description
+            if (result.ticket) {
+                html += `
+                    <div class="result-section">
+                        <h3>📝 Ticket-Bearbeitung:</h3>
+                        <p>${result.ticket}</p>
+                    </div>
+                `;
+            }
+
+            // Tips
+            if (result.tips) {
+                result.tips.forEach(tip => {
+                    html += `
+                        <div class="tip-box">
+                            <strong>${tip}</strong>
+                        </div>
+                    `;
+                });
+            }
+
+            // Warnings
+            if (result.warnings) {
+                result.warnings.forEach(warning => {
+                    html += `
+                        <div class="warning-box">
+                            <strong>${warning}</strong>
+                        </div>
+                    `;
+                });
+            }
+
+            // Info
+            if (result.info) {
+                html += `
+                    <div class="info-box">
+                        <strong>${result.info}</strong>
+                    </div>
+                `;
+            }
+
+            // Contact
+            if (result.contact) {
+                html += `
+                    <div class="info-box">
+                        <strong>${result.contact}</strong>
+                    </div>
+                `;
+            }
+
+            html += `
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-copy" onclick="copyResult()">📋 Kopieren</button>
+                    <button class="btn btn-primary" onclick="restart()">🔄 Neue Störung</button>
+                </div>
+            `;
+
+            content.innerHTML = html;
+        }
+
+        function copyResult() {
+            const resultBox = document.querySelector('.result-box');
+            const text = resultBox.innerText;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ Ergebnis in Zwischenablage kopiert!');
+            });
+        }
+
+        // Initial Render
+        render();
+    </script>
+</body>
+</html>
