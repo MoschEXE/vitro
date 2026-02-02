@@ -350,11 +350,6 @@
     </style>
 </head>
 <body>
-    <!-- Back Button (fixed position) -->
-    <button id="backButton" class="back-button" onclick="previousStep()" style="display: none;">
-        ← Zurück
-    </button>
-
     <div class="container">
         <!-- Header -->
         <div class="header">
@@ -370,6 +365,11 @@
             <div class="progress-text" id="progressText">Schritt 1 von 10</div>
         </div>
 
+        <!-- Back Button -->
+        <button id="backButton" class="back-button" onclick="previousStep()" style="display: none;">
+            ← Zurück
+        </button>
+
         <!-- Content Area -->
         <div class="content">
 
@@ -382,14 +382,11 @@
                     <button class="btn btn-primary" onclick="setLineOwner('DTAG')">
                         🟡 DTAG (Deutsche Telekom)
                     </button>
-                    <button class="btn btn-primary" onclick="setLineOwner('DNS')">
+                    <button class="btn btn-primary" onclick="setLineOwner('DNS:NET')">
                         🔵 DNS:NET
                     </button>
                     <button class="btn btn-primary" onclick="setLineOwner('inexio')">
                         🟢 inexio
-                    </button>
-                    <button class="btn btn-primary" onclick="setLineOwner('Unsicher')">
-                        ❓ Unsicher / Nicht bekannt
                     </button>
                 </div>
 
@@ -409,9 +406,6 @@
                     </button>
                     <button class="btn btn-danger" onclick="setActivity('no')">
                         ❌ Nein, noch nie Aktivität gehabt
-                    </button>
-                    <button class="btn btn-secondary" onclick="setActivity('unsure')">
-                        ❓ Unsicher / Nicht bekannt
                     </button>
                 </div>
 
@@ -703,7 +697,7 @@
                     • Nach "PPP" oder "Verbindung" filtern<br>
                     • Fehlercode 171 LAC notieren<br><br>
                     
-                    ✅ <strong>3. Beobachtungsphase:**<br>
+                    ✅ <strong>3. Beobachtungsphase:</strong><br>
                     • Kunde soll 24-48h beobachten<br>
                     • Bei weiteren Abbrüchen: Zeitpunkt notieren<br><br>
                     
@@ -841,38 +835,6 @@
                     </button>
                     <button class="btn btn-primary" onclick="restart()">
                         🔄 Neuen Fall starten
-                    </button>
-                </div>
-            </div>
-
-            <!-- ===== FINAL: Kunde kontaktieren ===== -->
-            <div id="final-contact" class="step">
-                <div class="result-box warning">
-                    <h2>📞 Kunde kontaktieren</h2>
-                    <p>Weitere Informationen erforderlich</p>
-                </div>
-
-                <div class="info-box">
-                    <strong>📋 Folgende Informationen beim Kunden erfragen:</strong><br><br>
-                    
-                    <strong>Bei unbekanntem LineOwner:</strong><br>
-                    • Anschlussdaten prüfen<br>
-                    • Im CRM nachschauen<br>
-                    • Ggf. beim Kunden nachfragen<br><br>
-                    
-                    <strong>Bei fehlender Aktivitäts-Info:</strong><br>
-                    • "Hatten Sie schon einmal Internet über diesen Anschluss?"<br>
-                    • Installationsdatum erfragen<br><br>
-                    
-                    <strong>Bei fehlendem Anschaltdatum:</strong><br>
-                    • Bestellung prüfen<br>
-                    • Anschaltdatum recherchieren<br>
-                    • Ohne Datum: Ticket kann nicht bearbeitet werden
-                </div>
-
-                <div class="button-group">
-                    <button class="btn btn-primary" onclick="restart()">
-                        🔄 Mit vollständigen Infos neu starten
                     </button>
                 </div>
             </div>
