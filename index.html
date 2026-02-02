@@ -350,14 +350,19 @@
     </style>
 </head>
 <body>
+    <!-- Back Button (fixed position) -->
+    <button id="backButton" class="back-button" onclick="previousStep()" style="display: none;">
+        ← Zurück
+    </button>
+
     <div class="container">
-        <!-- HEADER -->
+        <!-- Header -->
         <div class="header">
-            <h1>⚡ Vitro Troubleshooter</h1>
-            <p>Schnelle Lösung für VitroConnect-Tickets</p>
+            <h1>🔧 Vitro Troubleshooter</h1>
+            <p>Schritt-für-Schritt zur Lösung</p>
         </div>
 
-        <!-- PROGRESS BAR -->
+        <!-- Progress Bar -->
         <div class="progress-container">
             <div class="progress-bar">
                 <div class="progress-fill" id="progressBar"></div>
@@ -365,499 +370,372 @@
             <div class="progress-text" id="progressText">Schritt 1 von 10</div>
         </div>
 
-        <!-- CONTENT -->
+        <!-- Content Area -->
         <div class="content">
-            <!-- STEP 1: LineOwner Check -->
-            <div class="step active" id="step1">
-                <h2 class="question">🎯 Schritt 1: LineOwner identifizieren</h2>
+
+            <!-- ===== STEP 1: LineOwner ===== -->
+            <div id="step1" class="step active">
+                <h2>📡 LineOwner auswählen</h2>
+                <p class="step-description">Welcher Provider stellt die Leitung bereit?</p>
                 
-                <div class="info-box tip">
-                    <strong>💡 Tipp:</strong>
-                    Kundennummer in TITAN eingeben → LineID anzeigen lassen
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="setLineOwner('DTAG')">
+                        🟡 DTAG (Deutsche Telekom)
+                    </button>
+                    <button class="btn btn-primary" onclick="setLineOwner('DNS')">
+                        🔵 DNS:NET
+                    </button>
+                    <button class="btn btn-primary" onclick="setLineOwner('inexio')">
+                        🟢 inexio
+                    </button>
+                    <button class="btn btn-primary" onclick="setLineOwner('Unsicher')">
+                        ❓ Unsicher / Nicht bekannt
+                    </button>
+                </div>
+
+                <div class="info-box">
+                    <strong>💡 Tipp:</strong> Der LineOwner steht meist in den Anschlussdaten oder im CRM-System.
+                </div>
+            </div>
+
+            <!-- ===== STEP 2: Aktivität prüfen ===== -->
+            <div id="step2" class="step">
+                <h2>🔍 Aktivität prüfen</h2>
+                <p class="step-description">Hat die Leitung bereits Aktivität gehabt?</p>
+                
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="setActivity('yes')">
+                        ✅ Ja, Leitung hatte bereits Aktivität
+                    </button>
+                    <button class="btn btn-danger" onclick="setActivity('no')">
+                        ❌ Nein, noch nie Aktivität gehabt
+                    </button>
+                    <button class="btn btn-secondary" onclick="setActivity('unsure')">
+                        ❓ Unsicher / Nicht bekannt
+                    </button>
+                </div>
+
+                <div class="info-box">
+                    <strong>💡 Was bedeutet "Aktivität"?</strong><br>
+                    Hat der Kunde schon einmal erfolgreich Internet über diesen Anschluss genutzt?
+                </div>
+            </div>
+
+            <!-- ===== STEP 2b: Anschaltdatum ===== -->
+            <div id="step2b" class="step">
+                <h2>📅 Anschaltdatum prüfen</h2>
+                <p class="step-description">Ist ein Anschaltdatum bekannt/dokumentiert?</p>
+                
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="setAnschaltdatum('yes')">
+                        ✅ Ja, Anschaltdatum ist bekannt
+                    </button>
+                    <button class="btn btn-danger" onclick="setAnschaltdatum('no')">
+                        ❌ Nein, kein Anschaltdatum bekannt
+                    </button>
+                </div>
+
+                <div class="info-box warning">
+                    <strong>⚠️ Wichtig:</strong> Ohne Anschaltdatum kann keine Anschaltung bearbeitet werden!
+                </div>
+            </div>
+
+            <!-- ===== STEP 3: Ticket-Typ ===== -->
+            <div id="step3" class="step">
+                <h2>🎫 Welche Art von Störung?</h2>
+                <p class="step-description">Was beschreibt das Problem am besten?</p>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="setTicketType('anschaltung')">
+                        🆕 Anschaltung (Erstinstallation)
+                    </button>
+                    <button class="btn btn-danger" onclick="setTicketType('komplettausfall')">
+                        🔴 Komplettausfall (kein Internet)
+                    </button>
+                    <button class="btn btn-warning" onclick="setTicketType('sporadisch')">
+                        ⚡ Sporadische Abbrüche
+                    </button>
+                    <button class="btn btn-info" onclick="setTicketType('performance')">
+                        📊 Performance-Problem (zu langsam)
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== STEP 4: Router-Modell ===== -->
+            <div id="step4-router" class="step">
+                <h2>📡 Welcher Router?</h2>
+                <p class="step-description">Welches Router-Modell verwendet der Kunde?</p>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="setRouterModel('fritzbox')">
+                        🔴 AVM FRITZ!Box
+                    </button>
+                    <button class="btn btn-primary" onclick="setRouterModel('homebox')">
+                        🔵 o2 HomeBox
+                    </button>
+                    <button class="btn btn-secondary" onclick="setRouterModel('dritthersteller')">
+                        🔧 Dritthersteller (anderer Router)
+                    </button>
+                </div>
+
+                <div class="info-box">
+                    <strong>💡 Häufige Modelle:</strong><br>
+                    • FRITZ!Box 5530, 5590, 7590<br>
+                    • o2 HomeBox 3<br>
+                    • TP-Link, Asus, Netgear, etc.
+                </div>
+            </div>
+
+            <!-- ===== STEP 5: Verkabelung ===== -->
+            <div id="step5-verkabelung" class="step">
+                <h2>🔌 Verkabelung prüfen</h2>
+                <p class="step-description">Ist die Verkabelung korrekt?</p>
+                
+                <div class="info-box">
+                    <strong>📋 Richtige Verkabelung:</strong><br><br>
+                    <strong>1. Glasfaser-Patchkabel:</strong><br>
+                    📍 Wanddose (NFP) → ONT (Port: FG/Fiber)<br><br>
+                    <strong>2. Netzwerkkabel (RJ45):</strong><br>
+                    📍 ONT (Port: LAN1/GE1) → Router (WAN/Internet-Port)
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="checkVerkabelung('ok')">
+                        ✅ Verkabelung korrekt
+                    </button>
+                    <button class="btn btn-warning" onclick="alert('⚠️ Bitte Verkabelung korrigieren und erneut prüfen!'); checkVerkabelung('korrigiert')">
+                        🔧 Verkabelung war falsch (jetzt korrigiert)
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== STEP 6: ONT Status ===== -->
+            <div id="step6-ont" class="step">
+                <h2>💡 ONT Status prüfen</h2>
+                <p class="step-description">Welche LEDs leuchten am ONT (Glasfaser-Modem)?</p>
+                
+                <div class="info-box">
+                    <strong>📋 LED-Bedeutung am ONT:</strong><br><br>
+                    🟢 <strong>POWER:</strong> Muss leuchten (Stromversorgung)<br>
+                    🟢 <strong>PON/FIBER/LOS:</strong> Muss leuchten (Glasfaser-Signal)<br>
+                    🟢 <strong>LAN/GE:</strong> Sollte leuchten (Verbindung zum Router)
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="setONTStatus('alle-gruen')">
+                        🟢 Alle relevanten LEDs grün
+                    </button>
+                    <button class="btn btn-warning" onclick="setONTStatus('pon-rot')">
+                        🔴 PON/FIBER LED rot oder aus
+                    </button>
+                    <button class="btn btn-danger" onclick="setONTStatus('kein-strom')">
+                        ⚫ Keine LEDs (kein Strom)
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== STEP 7: FRITZ!Box Konfiguration ===== -->
+            <div id="step7-fritzbox" class="step">
+                <h2>🔴 FRITZ!Box konfigurieren</h2>
+                <p class="step-description">Bitte folgende Einstellungen prüfen/eintragen:</p>
+                
+                <div class="info-box">
+                    <strong>📋 Einstellungen für FRITZ!Box:</strong><br><br>
+                    
+                    <strong>1. Assistent starten:</strong><br>
+                    • Browser öffnen: <code>http://fritz.box</code><br>
+                    • Internet → Zugangsdaten → Anbieter ändern<br><br>
+                    
+                    <strong>2. Einstellungen:</strong><br>
+                    • Anschluss: <strong>Glasfaser-Modem</strong><br>
+                    • Internetanbieter: <strong>o2</strong> (aus Liste wählen)<br>
+                    • Benutzername: (leer lassen)<br>
+                    • Kennwort: (leer lassen)<br><br>
+                    
+                    <strong>3. Speichern & Warten:</strong><br>
+                    • Einstellungen übernehmen<br>
+                    • 2-3 Minuten warten<br>
+                    • Internet-LED prüfen
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="nextStep('step8-verbindung')">
+                        ✅ Konfiguration durchgeführt → Weiter
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== STEP 7: HomeBox Konfiguration ===== -->
+            <div id="step7-homebox" class="step">
+                <h2>🔵 o2 HomeBox konfigurieren</h2>
+                <p class="step-description">Bitte folgende Einstellungen prüfen/eintragen:</p>
+                
+                <div class="info-box">
+                    <strong>📋 Einstellungen für o2 HomeBox:</strong><br><br>
+                    
+                    <strong>1. Webinterface öffnen:</strong><br>
+                    • Browser: <code>http://o2.box</code> oder <code>192.168.1.1</code><br>
+                    • Login mit Gerätepasswort (steht auf Rückseite)<br><br>
+                    
+                    <strong>2. Einstellungen:</strong><br>
+                    • Internet → Verbindung → Glasfaser<br>
+                    • VLAN-ID: (leer/deaktiviert)<br>
+                    • Authentifizierung: <strong>Keine</strong><br><br>
+                    
+                    <strong>3. Speichern & Warten:</strong><br>
+                    • Einstellungen übernehmen<br>
+                    • Router startet neu (ca. 2 Min.)<br>
+                    • Internet-LED prüfen
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="nextStep('step8-verbindung')">
+                        ✅ Konfiguration durchgeführt → Weiter
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== STEP 8: Verbindung prüfen ===== -->
+            <div id="step8-verbindung" class="step">
+                <h2>🌐 Verbindung prüfen</h2>
+                <p class="step-description">Hat der Router jetzt eine Internet-Verbindung?</p>
+                
+                <div class="info-box">
+                    <strong>🔍 Wie prüfen?</strong><br><br>
+                    <strong>FRITZ!Box:</strong><br>
+                    • Internet-LED leuchtet grün<br>
+                    • fritz.box → Internet → Online-Monitor zeigt "Verbunden"<br><br>
+                    
+                    <strong>HomeBox:</strong><br>
+                    • Internet-LED leuchtet grün<br>
+                    • o2.box → Status zeigt "Verbunden"<br><br>
+                    
+                    <strong>Test:</strong><br>
+                    • Website öffnen (z.B. google.de)<br>
+                    • Speedtest durchführen
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="setVerbindung('ok')">
+                        ✅ Verbindung steht - Kunde ist online!
+                    </button>
+                    <button class="btn btn-danger" onclick="setVerbindung('nok')">
+                        ❌ Keine Verbindung
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== STEP 9: Portreset ===== -->
+            <div id="step9-portreset" class="step">
+                <h2>🔄 Portreset durchführen</h2>
+                <p class="step-description">Bitte im entsprechenden System einen Portreset durchführen</p>
+                
+                <div class="info-box warning">
+                    <strong>⚠️ Portreset durchführen in:</strong><br><br>
+                    <strong>DTAG:</strong> VIT Glasfaser Portal<br>
+                    <strong>DNS:NET:</strong> DNS:NET Portal<br>
+                    <strong>inexio:</strong> inexio Partnersystem<br><br>
+                    
+                    <strong>Nach Portreset:</strong><br>
+                    • 2-3 Minuten warten<br>
+                    • ONT & Router prüfen<br>
+                    • Verbindung testen
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="setPortreset('ok')">
+                        ✅ Portreset erfolgreich - Verbindung steht!
+                    </button>
+                    <button class="btn btn-danger" onclick="setPortreset('nok')">
+                        ❌ Portreset ohne Erfolg
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== STEP 10: Komplettausfall ===== -->
+            <div id="step10-komplettausfall" class="step">
+                <h2>🔴 Komplettausfall beheben</h2>
+                <p class="step-description">Troubleshooting-Schritte durchführen</p>
+                
+                <div class="info-box">
+                    <strong>📋 Checkliste Komplettausfall:</strong><br><br>
+                    
+                    ✅ <strong>1. ONT Status prüfen:</strong><br>
+                    • Power LED leuchtet?<br>
+                    • PON/Fiber LED grün?<br>
+                    • Falls rot/aus: Stromreset am ONT<br><br>
+                    
+                    ✅ <strong>2. Router neu starten:</strong><br>
+                    • Strom ziehen, 30 Sek. warten<br>
+                    • Wieder einstecken, 2-3 Min. warten<br><br>
+                    
+                    ✅ <strong>3. Verkabelung prüfen:</strong><br>
+                    • Alle Kabel fest eingesteckt?<br>
+                    • Richtiger Port am Router (WAN)?<br><br>
+                    
+                    ✅ <strong>4. Portreset durchführen:</strong><br>
+                    • Im entsprechenden Portal<br>
+                    • 2-3 Minuten warten
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-success" onclick="komplettausfallResolved()">
+                        ✅ Problem behoben - Kunde online!
+                    </button>
+                    <button class="btn btn-danger" onclick="komplettausfallEskalieren()">
+                        ❌ Alle Schritte ohne Erfolg → Eskalieren
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== STEP 11: Sporadische Abbrüche ===== -->
+            <div id="step11-sporadisch" class="step">
+                <h2>⚡ Sporadische Abbrüche analysieren</h2>
+                <p class="step-description">Verbindungsabbrüche prüfen und dokumentieren</p>
+                
+                <div class="info-box">
+                    <strong>📋 Vorgehen bei sporadischen Abbrüchen:</strong><br><br>
+                    
+                    ✅ <strong>1. Portreset durchführen</strong><br><br>
+                    
+                    ✅ <strong>2. Bei FRITZ!Box: 171 LAC Log prüfen</strong><br>
+                    • fritz.box → System → Ereignisse<br>
+                    • Nach "PPP" oder "Verbindung" filtern<br>
+                    • Fehlercode 171 LAC notieren<br><br>
+                    
+                    ✅ <strong>3. Beobachtungsphase:**<br>
+                    • Kunde soll 24-48h beobachten<br>
+                    • Bei weiteren Abbrüchen: Zeitpunkt notieren<br><br>
+                    
+                    <strong>💡 Entscheidung:</strong><br>
+                    • Abbrüche selten (1-2x/Tag): WFC<br>
+                    • Abbrüche häufig (mehrmals/Stunde): STM
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-warning" onclick="sporadischWFC()">
+                        📋 Ins WFC zur Beobachtung
+                    </button>
+                    <button class="btn btn-danger" onclick="sporadischEskalieren()">
+                        🚨 Direkt eskalieren (STM)
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== STEP 12: Performance ===== -->
+            <div id="step12-performance" class="step">
+                <h2>📊 Performance prüfen</h2>
+                <p class="step-description">Geschwindigkeit messen und bewerten</p>
+                
+                <div class="info-box">
+                    <strong>⚠️ Wichtig vor dem Test:</strong><br>
+                    • Test per LAN-Kabel (nicht WLAN!)<br>
+                    • Alle anderen Geräte offline<br>
+                    • Speedtest auf: <a href="https://speedtest.net" target="_blank">speedtest.net</a>
                 </div>
 
                 <div class="input-group">
-                    <label for="lineId">LineID eingeben (optional, zur Dokumentation):</label>
-                    <input type="text" id="lineId" placeholder="z.B. VITR123456">
-                </div>
-
-                <div class="button-group">
-                    <button class="btn" onclick="setLineOwner('UGG')">
-                        🔵 UGG (UGG GmbH & Co. KG)
-                    </button>
-                    <button class="btn" onclick="setLineOwner('EWE')">
-                        🟢 EWE (EWE Tel GmbH)
-                    </button>
-                    <button class="btn" onclick="setLineOwner('Vitro')">
-                        🟣 Vitro (vitroconnect GmbH)
-                    </button>
-                </div>
-
-                <div class="info-box warning" style="margin-top: 20px;">
-                    <strong>⚠️ Wichtig:</strong>
-                    Der LineOwner bestimmt, an wen du Störungen eskalierst!
-                </div>
-            </div>
-
-            <!-- STEP 2: Aktivität Check -->
-            <div class="step" id="step2">
-                <h2 class="question">📅 Schritt 2: Aktivität prüfen</h2>
-                
-                <div class="info-box tip">
-                    <strong>💡 Wie prüfen?</strong>
-                    In TITAN die letzten 7 Tage auf Verbindungsaktivität checken
-                </div>
-
-                <div class="button-group">
-                    <button class="btn" onclick="setActivity('yes')">
-                        ✅ JA - Aktivität vorhanden → Störung
-                    </button>
-                    <button class="btn" onclick="setActivity('no')">
-                        ❌ NEIN - Keine Aktivität → Anschaltung
-                    </button>
-                    <button class="btn" onclick="setActivity('unsure')">
-                        ❓ UNSICHER - Kunde kontaktieren nötig
-                    </button>
-                </div>
-
-                <div class="info-box warning" style="margin-top: 20px;">
-                    <strong>⚠️ Sonderfälle:</strong>
-                    <ul style="margin-top: 10px; padding-left: 20px;">
-                        <li>Kunde war 1 Monat im Urlaub + Ausfall > 7 Tage = trotzdem Störung</li>
-                        <li>Anschaltung vor 2 Monaten, aber nie im Betrieb = Anschaltung</li>
-                        <li>Bei Unsicherheit: IMMER erst mit Kunde telefonieren!</li>
-                    </ul>
-                </div>
-            </div>
-
-            <!-- STEP 2b: Anschaltdatum Check (wenn keine Aktivität) -->
-            <div class="step" id="step2b">
-                <h2 class="question">📋 Anschaltdatum im Ticket?</h2>
-                
-                <div class="info-box tip">
-                    <strong>💡 Wo finden?</strong>
-                    <ul style="margin-top: 10px; padding-left: 20px;">
-                        <li>Steht meist drin, wenn Ticket von Hotline kam</li>
-                        <li>Fehlt oft bei Tickets aus "o2 my service" App</li>
-                        <li>Dann: Infos manuell zusammensuchen</li>
-                    </ul>
-                </div>
-
-                <div class="button-group">
-                    <button class="btn" onclick="setAnschaltdatum('yes')">
-                        ✅ JA - Anschaltdatum bekannt → Weiter
-                    </button>
-                    <button class="btn" onclick="setAnschaltdatum('no')">
-                        ❌ NEIN - Kunde kontaktieren nötig
-                    </button>
-                </div>
-            </div>
-
-            <!-- STEP 3: Störungstyp wählen -->
-            <div class="step" id="step3">
-                <h2 class="question">🔍 Schritt 3: Störungstyp wählen</h2>
-                
-                <div class="button-group">
-                    <button class="btn" onclick="setTicketType('anschaltung')">
-                        🆕 FTTH-Anschaltung (Ersteinrichtung)
-                    </button>
-                    <button class="btn" onclick="setTicketType('komplettausfall')">
-                        🔴 Komplettausfall (Kunde komplett offline)
-                    </button>
-                    <button class="btn" onclick="setTicketType('sporadisch')">
-                        🟡 Sporadische Ausfälle (immer wieder Abbrüche)
-                    </button>
-                    <button class="btn" onclick="setTicketType('performance')">
-                        🐌 Performance-Probleme (langsame Verbindung)
-                    </button>
-                </div>
-            </div>
-
-            <!-- STEP 4: Router-Modell (für Anschaltung) -->
-            <div class="step" id="step4-router">
-                <h2 class="question">📦 Router-Modell?</h2>
-                
-                <div class="info-box tip">
-                    <strong>💡 Warum wichtig?</strong>
-                    Homebox und Fritzbox haben unterschiedliche Menüs!
-                </div>
-
-                <div class="button-group">
-                    <button class="btn" onclick="setRouterModel('fritzbox')">
-                        🔴 Fritzbox (alle Modelle)
-                    </button>
-                    <button class="btn" onclick="setRouterModel('homebox')">
-                        ⚪ Homebox 3
-                    </button>
-                    <button class="btn" onclick="setRouterModel('other')">
-                        ❓ Anderer Router (Dritthersteller)
-                    </button>
-                </div>
-            </div>
-
-            <!-- STEP 5: Verkabelung prüfen -->
-            <div class="step" id="step5-verkabelung">
-                <h2 class="question">🔌 Verkabelung prüfen</h2>
-                
-                <div class="info-box warning">
-                    <strong>⚠️ WICHTIG:</strong>
-                    Falsche Verkabelung = häufigster Fehler bei Anschaltungen!
-                </div>
-
-                <div class="checklist">
-                    <h3 style="margin-bottom: 15px;">✅ Checkliste mit Kunde durchgehen:</h3>
-                    <div class="checklist-item">
-                        <input type="checkbox" id="check1">
-                        <label for="check1">Glasfaserkabel von Wand → ONT (blaues/grünes Kabel)</label>
-                    </div>
-                    <div class="checklist-item">
-                        <input type="checkbox" id="check2">
-                        <label for="check2">Netzwerkkabel ONT → Router (meist gelbes LAN-Kabel)</label>
-                    </div>
-                    <div class="checklist-item">
-                        <input type="checkbox" id="check3">
-                        <label for="check3">Strom am ONT angeschlossen</label>
-                    </div>
-                    <div class="checklist-item">
-                        <input type="checkbox" id="check4">
-                        <label for="check4">Strom am Router angeschlossen</label>
-                    </div>
-                </div>
-
-                <div class="button-group">
-                    <button class="btn" onclick="checkVerkabelung('mit-ont')">
-                        ✅ Mit ONT (Standard bei VitroConnect)
-                    </button>
-                    <button class="btn" onclick="checkVerkabelung('ohne-ont')">
-                        🔄 Ohne ONT (Glasfaser direkt in Router)
-                    </button>
-                </div>
-            </div>
-
-            <!-- STEP 6: ONT LED Status -->
-            <div class="step" id="step6-ont">
-                <h2 class="question">💡 ONT LED-Status prüfen</h2>
-                
-                <div class="info-box tip">
-                    <strong>💡 Was sagt uns der ONT?</strong>
-                    Die LEDs zeigen, wo genau das Problem liegt!
-                </div>
-
-                <h3 style="margin: 20px 0;">Welche LEDs leuchten?</h3>
-
-                <div class="led-status">
-                    <div class="led-indicator green"></div>
-                    <div>
-                        <strong>Power:</strong> Betriebsbereitschaft<br>
-                        <small style="color: #666;">Muss AN sein, sonst kein Strom!</small>
-                    </div>
-                </div>
-
-                <div class="led-status">
-                    <div class="led-indicator green"></div>
-                    <div>
-                        <strong>Sync / Connection:</strong> Kommunikation nach außen<br>
-                        <small style="color: #666;">Muss AN sein für Internet</small>
-                    </div>
-                </div>
-
-                <div class="led-status">
-                    <div class="led-indicator green"></div>
-                    <div>
-                        <strong>ETH:</strong> Verbindung zum Router<br>
-                        <small style="color: #666;">Sollte AN oder BLINKEN</small>
-                    </div>
-                </div>
-
-                <div class="led-status">
-                    <div class="led-indicator off"></div>
-                    <div>
-                        <strong>Alarm:</strong> Störungsanzeige<br>
-                        <small style="color: #666;">Sollte AUS sein (grau/schwarz)</small>
-                    </div>
-                </div>
-
-                <h3 style="margin: 30px 0 15px 0;">Aktueller Status:</h3>
-                
-                <div class="button-group">
-                    <button class="btn" onclick="setONTStatus('normal')">
-                        ✅ Alles grün, nur Alarm aus → Normalbetrieb
-                    </button>
-                    <button class="btn" onclick="setONTStatus('anschaltung')">
-                        🟡 Power AN, Sync AUS, ETH blinkt, Alarm ROT<br>
-                        <small style="display: block; margin-top: 5px; opacity: 0.7;">
-                        → Typisch bei Anschaltung (ONT bereit, kein Signal von UGG)
-                        </small>
-                    </button>
-                    <button class="btn" onclick="setONTStatus('kein-strom')">
-                        🔴 Power AUS → Kein Strom am ONT
-                    </button>
-                    <button class="btn" onclick="setONTStatus('kein-sync')">
-                        🟠 Power AN, Sync AUS, Alarm ROT<br>
-                        <small style="display: block; margin-top: 5px; opacity: 0.7;">
-                        → Leitungsproblem (UGG muss prüfen)
-                        </small>
-                    </button>
-                </div>
-            </div>
-
-            <!-- STEP 7: Router konfigurieren (Fritzbox) -->
-            <div class="step" id="step7-fritzbox">
-                <h2 class="question">⚙️ Fritzbox konfigurieren</h2>
-                
-                <div class="info-box warning">
-                    <strong>⚠️ WICHTIG bei Anschaltung:</strong>
-                    Router TROTZDEM einrichten, auch wenn ONT noch kein Signal hat!<br>
-                    <strong>Vorteil:</strong> Sobald UGG das Signal schaltet, ist Kunde sofort online!
-                </div>
-
-                <div class="result-box">
-                    <h3>📋 Fritzbox-Konfiguration (mit ONT):</h3>
-                    <ol style="line-height: 2; padding-left: 20px;">
-                        <li><strong>http://fritz.box</strong> aufrufen</li>
-                        <li><strong>Internet → Zugangsdaten → Anbieter</strong></li>
-                        <li><strong>o2</strong> auswählen</li>
-                        <li>
-                            <strong>Manchmal erscheinen 2 Reiter</strong> (OS-abhängig):<br>
-                            → <strong>"Glasfaser"</strong> anklicken
-                        </li>
-                        <li>
-                            <strong>Zugangsart:</strong> o2 FTTH auswählen<br>
-                            <small style="color: #666;">(Feld erscheint nur bei Anschluss über ONT/WAN/LAN1)</small>
-                        </li>
-                        <li><strong>Benutzername:</strong> leer lassen</li>
-                        <li><strong>Kennwort:</strong> leer lassen</li>
-                        <li><strong>Übernehmen</strong> klicken</li>
-                        <li>Router startet neu (ca. 2 Minuten warten)</li>
-                    </ol>
-                </div>
-
-                <div class="info-box tip">
-                    <strong>💡 Ohne ONT (Direktanschluss)?</strong>
-                    Dann erscheint statt "Zugangsart" das Feld:<br>
-                    <strong>"ONT-Installationskennung"</strong><br>
-                    → Diese aus VitroConnect Tool übernehmen
-                </div>
-
-                <div class="button-group">
-                    <button class="btn-primary btn" onclick="nextStep('step8-verbindung')">
-                        ➡️ Weiter zur Verbindungsprüfung
-                    </button>
-                </div>
-            </div>
-
-            <!-- STEP 7b: Router konfigurieren (Homebox) -->
-            <div class="step" id="step7-homebox">
-                <h2 class="question">⚙️ Homebox konfigurieren</h2>
-                
-                <div class="result-box">
-                    <h3>📋 Homebox-Konfiguration:</h3>
-                    <ol style="line-height: 2; padding-left: 20px;">
-                        <li><strong>http://o2.box</strong> aufrufen</li>
-                        <li><strong>Internet → Internetzugang</strong></li>
-                        <li><strong>Anbieter:</strong> o2</li>
-                        <li><strong>Anschlussart:</strong> Glasfaser (FTTH)</li>
-                        <li><strong>Übernehmen</strong> → Router startet neu</li>
-                    </ol>
-                </div>
-
-                <div class="info-box tip">
-                    <strong>💡 LED-Status Homebox:</strong>
-                    <ul style="margin-top: 10px; padding-left: 20px;">
-                        <li>Power LED: grün = OK</li>
-                        <li>Internet LED: grün = verbunden</li>
-                        <li>WLAN LED: grün = aktiv</li>
-                    </ul>
-                </div>
-
-                <div class="button-group">
-                    <button class="btn-primary btn" onclick="nextStep('step8-verbindung')">
-                        ➡️ Weiter zur Verbindungsprüfung
-                    </button>
-                </div>
-            </div>
-
-            <!-- STEP 8: Verbindung testen -->
-            <div class="step" id="step8-verbindung">
-                <h2 class="question">🌐 Verbindung testen</h2>
-                
-                <div class="info-box tip">
-                    <strong>💡 Wie testen?</strong>
-                    <ol style="margin-top: 10px; padding-left: 20px;">
-                        <li>Kunde soll <strong>www.google.de</strong> aufrufen</li>
-                        <li>Oder: Router-Menü → Internet → Online-Monitor</li>
-                    </ol>
-                </div>
-
-                <div class="button-group">
-                    <button class="btn" onclick="setVerbindung('ok')">
-                        ✅ Verbindung OK - Internet funktioniert!
-                    </button>
-                    <button class="btn" onclick="setVerbindung('nok')">
-                        ❌ Verbindung NOK - Kein Internet
-                    </button>
-                </div>
-            </div>
-
-            <!-- STEP 9: Portreset durchführen -->
-            <div class="step" id="step9-portreset">
-                <h2 class="question">🔄 Portreset durchführen</h2>
-                
-                <div class="info-box warning">
-                    <strong>⚠️ Wichtig:</strong>
-                    Portreset immer VOR Eskalation an UGG durchführen!
-                </div>
-
-                <div class="result-box">
-                    <h3>📋 Portreset-Anleitung:</h3>
-                    <ol style="line-height: 2; padding-left: 20px;">
-                        <li><strong>In TITAN:</strong> Portreset-Funktion aufrufen</li>
-                        <li><strong>Parallel:</strong> ONT + Router 10 Sekunden vom Strom trennen</li>
-                        <li><strong>Warten:</strong> 30 Sekunden</li>
-                        <li><strong>Einschalten:</strong> Erst ONT, dann Router</li>
-                        <li><strong>Warten:</strong> 3-5 Minuten (ONT Sync + Router Boot)</li>
-                        <li><strong>Testen:</strong> Verbindung erneut prüfen</li>
-                    </ol>
-                </div>
-
-                <div class="button-group">
-                    <button class="btn" onclick="setPortreset('ok')">
-                        ✅ Nach Portreset: Internet funktioniert!
-                    </button>
-                    <button class="btn" onclick="setPortreset('nok')">
-                        ❌ Nach Portreset: Immer noch kein Internet
-                    </button>
-                </div>
-            </div>
-
-            <!-- STEP 10: Komplettausfall bearbeiten -->
-            <div class="step" id="step10-komplettausfall">
-                <h2 class="question">🔴 Komplettausfall bearbeiten</h2>
-                
-                <div class="info-box warning">
-                    <strong>⚠️ Definition Komplettausfall:</strong>
-                    Kunde hat GAR KEIN Internet mehr (nicht nur langsam)
-                </div>
-
-                <h3 style="margin: 20px 0;">Quick-Checks:</h3>
-                
-                <div class="checklist">
-                    <div class="checklist-item">
-                        <input type="checkbox" id="kcheck1">
-                        <label for="kcheck1">ONT LEDs geprüft?</label>
-                    </div>
-                    <div class="checklist-item">
-                        <input type="checkbox" id="kcheck2">
-                        <label for="kcheck2">Router-Verkabelung OK?</label>
-                    </div>
-                    <div class="checklist-item">
-                        <input type="checkbox" id="kcheck3">
-                        <label for="kcheck3">Router neu gestartet?</label>
-                    </div>
-                    <div class="checklist-item">
-                        <input type="checkbox" id="kcheck4">
-                        <label for="kcheck4">Portreset durchgeführt?</label>
-                    </div>
-                </div>
-
-                <div class="button-group">
-                    <button class="btn" onclick="komplettausfallResolved()">
-                        ✅ Problem gelöst - Internet läuft wieder
-                    </button>
-                    <button class="btn" onclick="komplettausfallEskalieren()">
-                        📋 An LineOwner eskalieren (STM erstellen)
-                    </button>
-                </div>
-            </div>
-
-            <!-- STEP 11: Sporadische Ausfälle -->
-            <div class="step" id="step11-sporadisch">
-                <h2 class="question">🟡 Sporadische Ausfälle bearbeiten</h2>
-                
-                <div class="info-box warning">
-                    <strong>⚠️ Definition:</strong>
-                    Verbindung bricht immer wieder ab, aber kommt zurück
-                </div>
-
-                <h3 style="margin: 20px 0;">Häufige Ursachen:</h3>
-                
-                <div class="info-box tip">
-                    <strong>1️⃣ 171 LAC-Fehler prüfen:</strong><br>
-                    <ul style="margin-top: 10px; padding-left: 20px;">
-                        <li>In TITAN: 171 LAC Log anschauen</li>
-                        <li>Fehlercode dokumentieren</li>
-                        <li>Im Ticket als Fehlerbeschreibung aufnehmen</li>
-                    </ul>
-                </div>
-
-                <div class="info-box tip">
-                    <strong>2️⃣ Überhitzung:</strong><br>
-                    Router steht in geschlossenem Schrank? → Belüftung prüfen
-                </div>
-
-                <div class="info-box tip">
-                    <strong>3️⃣ Defekte Hardware:</strong><br>
-                    Router-LEDs flackern? → Austausch nötig
-                </div>
-
-                <div class="button-group">
-                    <button class="btn" onclick="sporadischWFC()">
-                        ⏸️ WFC (Kunde soll 24-48h beobachten)
-                    </button>
-                    <button class="btn" onclick="sporadischEskalieren()">
-                        📋 An LineOwner eskalieren
-                    </button>
-                </div>
-            </div>
-
-            <!-- STEP 12: Performance-Probleme -->
-            <div class="step" id="step12-performance">
-                <h2 class="question">🐌 Performance-Probleme bearbeiten</h2>
-                
-                <div class="info-box tip">
-                    <strong>💡 Wichtig:</strong>
-                    Erst Schwellenwerte prüfen, bevor du eskalierst!
-                </div>
-
-                <h3 style="margin: 20px 0;">Schwellenwerte:</h3>
-                
-                <div class="result-box">
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <tr style="background: #f0f0f0;">
-                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Tarif</th>
-                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Min. Download</th>
-                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Min. Upload</th>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border: 1px solid #ddd;">50 Mbit/s</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">25 Mbit/s (50%)</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">5 Mbit/s (50%)</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border: 1px solid #ddd;">100 Mbit/s</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">50 Mbit/s (50%)</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">20 Mbit/s (50%)</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border: 1px solid #ddd;">250 Mbit/s</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">125 Mbit/s (50%)</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">20 Mbit/s (40%)</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 10px; border: 1px solid #ddd;">1000 Mbit/s</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">500 Mbit/s (50%)</td>
-                            <td style="padding: 10px; border: 1px solid #ddd;">100 Mbit/s (20%)</td>
-                        </tr>
-                    </table>
-                </div>
-
-                <div class="info-box warning">
-                    <strong>⚠️ Wichtig:</strong>
-                    Speedtest IMMER per LAN-Kabel machen, nicht WLAN!
-                </div>
-
-                <div class="input-group">
-                    <label>Gebuchter Tarif:</label>
+                    <label for="tarif">Gebuchter Tarif:</label>
                     <select id="tarif">
                         <option value="50">50 Mbit/s</option>
                         <option value="100">100 Mbit/s</option>
@@ -867,171 +745,150 @@
                 </div>
 
                 <div class="input-group">
-                    <label>Gemessener Download (Mbit/s):</label>
-                    <input type="number" id="download" placeholder="z.B. 45">
+                    <label for="download">Gemessener Download (Mbit/s):</label>
+                    <input type="number" id="download" placeholder="z.B. 45.5">
                 </div>
 
                 <div class="input-group">
-                    <label>Gemessener Upload (Mbit/s):</label>
-                    <input type="number" id="upload" placeholder="z.B. 8">
+                    <label for="upload">Gemessener Upload (Mbit/s):</label>
+                    <input type="number" id="upload" placeholder="z.B. 8.2">
                 </div>
 
                 <div class="button-group">
-                    <button class="btn-primary btn" onclick="checkPerformance()">
-                        🔍 Schwellenwerte prüfen
+                    <button class="btn btn-primary" onclick="checkPerformance()">
+                        🔍 Performance prüfen
                     </button>
                 </div>
 
                 <div id="performanceResult"></div>
+
+                <div class="info-box" style="margin-top: 20px;">
+                    <strong>📊 Schwellenwerte (50% der gebuchten Leistung):</strong><br><br>
+                    <strong>50 Mbit/s:</strong> Min. 25 Down / 5 Up<br>
+                    <strong>100 Mbit/s:</strong> Min. 50 Down / 20 Up<br>
+                    <strong>250 Mbit/s:</strong> Min. 125 Down / 20 Up<br>
+                    <strong>1000 Mbit/s:</strong> Min. 500 Down / 100 Up
+                </div>
             </div>
 
-            <!-- FINAL RESULT: Ticket schließen -->
-            <div class="step" id="final-success">
-                <h2 class="question">✅ Ticket erfolgreich bearbeitet!</h2>
-                
-                <div class="info-box success">
-                    <strong>🎉 Glückwunsch!</strong>
-                    Problem gelöst - Kunde ist zufrieden!
+            <!-- ===== FINAL: Erfolg ===== -->
+            <div id="final-success" class="step">
+                <div class="result-box success">
+                    <h2>✅ Problem gelöst!</h2>
+                    <p>Der Kunde ist wieder online. Ticket kann geschlossen werden.</p>
                 </div>
 
-                <div class="result-box">
-                    <h3>📋 Ticket-Dokumentation (Copy & Paste):</h3>
-                    <pre id="finalDocumentation"></pre>
-                    <button class="copy-btn" onclick="copyToClipboard('finalDocumentation')">
-                        📋 Text kopieren
+                <div class="info-box">
+                    <strong>📋 Dokumentation für Ticket:</strong>
+                    <textarea id="finalDocumentation" readonly style="width: 100%; height: 300px; font-family: monospace; font-size: 0.9em; padding: 15px; border: 1px solid #ddd; border-radius: 8px;"></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="copyToClipboard('finalDocumentation')">
+                        📋 In Zwischenablage kopieren
+                    </button>
+                    <button class="btn btn-primary" onclick="restart()">
+                        🔄 Neuen Fall starten
                     </button>
                 </div>
-
-                <div class="info-box tip">
-                    <strong>💡 Nächste Schritte:</strong>
-                    <ol style="margin-top: 10px; padding-left: 20px;">
-                        <li>Text in Ticket einfügen</li>
-                        <li>Ticket schließen</li>
-                        <li>Optional: Courtesy Call beim Kunden (falls angebracht)</li>
-                    </ol>
-                </div>
-
-                <button class="btn-restart" onclick="restart()">
-                    🔄 Neues Ticket bearbeiten
-                </button>
             </div>
 
-            <!-- FINAL RESULT: WFC -->
-            <div class="step" id="final-wfc">
-                <h2 class="question">⏸️ Ticket ins WFC</h2>
-                
-                <div class="info-box warning">
-                    <strong>⚠️ Waiting for Close:</strong>
-                    Kunde soll Anschluss 24-48h beobachten
+            <!-- ===== FINAL: WFC ===== -->
+            <div id="final-wfc" class="step">
+                <div class="result-box warning">
+                    <h2>📋 Ticket ins WFC</h2>
+                    <p>Beobachtungsphase erforderlich</p>
                 </div>
 
-                <div class="result-box">
-                    <h3>📋 WFC-Dokumentation (Copy & Paste):</h3>
-                    <pre id="wfcDocumentation"></pre>
-                    <button class="copy-btn" onclick="copyToClipboard('wfcDocumentation')">
-                        📋 Text kopieren
+                <div class="info-box">
+                    <strong>📋 Dokumentation für WFC:</strong>
+                    <textarea id="wfcDocumentation" readonly style="width: 100%; height: 300px; font-family: monospace; font-size: 0.9em; padding: 15px; border: 1px solid #ddd; border-radius: 8px;"></textarea>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="copyToClipboard('wfcDocumentation')">
+                        📋 In Zwischenablage kopieren
+                    </button>
+                    <button class="btn btn-primary" onclick="restart()">
+                        🔄 Neuen Fall starten
                     </button>
                 </div>
-
-                <div class="info-box tip">
-                    <strong>💡 Nächste Schritte:</strong>
-                    <ol style="margin-top: 10px; padding-left: 20px;">
-                        <li>Text in Ticket einfügen</li>
-                        <li>Ticket-Status: WFC setzen</li>
-                        <li>Wiedervorlage: In 48h</li>
-                        <li>Wenn Kunde sich meldet: Erneut prüfen</li>
-                    </ol>
-                </div>
-
-                <button class="btn-restart" onclick="restart()">
-                    🔄 Neues Ticket bearbeiten
-                </button>
             </div>
 
-            <!-- FINAL RESULT: STM erstellen -->
-            <div class="step" id="final-stm">
-                <h2 class="question">📋 STM erstellen</h2>
-                
-                <div class="info-box warning">
-                    <strong>⚠️ Eskalation an LineOwner:</strong>
-                    <span id="stmLineOwner"></span>
+            <!-- ===== FINAL: STM ===== -->
+            <div id="final-stm" class="step">
+                <div class="result-box error">
+                    <h2>🚨 STM an <span id="stmLineOwner"></span> erstellen</h2>
+                    <p id="stmTermin"></p>
                 </div>
 
-                <div class="result-box">
-                    <h3>📋 STM-Text (Copy & Paste):</h3>
-                    <pre id="stmDocumentation"></pre>
-                    <button class="copy-btn" onclick="copyToClipboard('stmDocumentation')">
-                        📋 Text kopieren
+                <div class="info-box">
+                    <strong>📋 STM-Dokumentation:</strong>
+                    <textarea id="stmDocumentation" readonly style="width: 100%; height: 350px; font-family: monospace; font-size: 0.9em; padding: 15px; border: 1px solid #ddd; border-radius: 8px;"></textarea>
+                </div>
+
+                <div class="info-box warning">
+                    <strong>⚠️ Wichtig nach STM-Erstellung:</strong><br>
+                    • STM-Nummer dokumentieren<br>
+                    • Bei <span id="stmLineOwner2"></span> im entsprechenden System erstellen<br>
+                    • Termin mit Kunde vereinbaren (falls erforderlich)<br>
+                    • Ticket-Status auf "Wartet auf Dritte" setzen
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="copyToClipboard('stmDocumentation')">
+                        📋 In Zwischenablage kopieren
+                    </button>
+                    <button class="btn btn-primary" onclick="restart()">
+                        🔄 Neuen Fall starten
                     </button>
                 </div>
-
-                <div class="info-box tip">
-                    <strong>💡 STM erstellen:</strong>
-                    <ol style="margin-top: 10px; padding-left: 20px;">
-                        <li>In TITAN: STM-Funktion aufrufen</li>
-                        <li>LineOwner: <strong id="stmLineOwner2"></strong></li>
-                        <li>Fehlertext aus Textbaustein einfügen</li>
-                        <li>Termin: <strong id="stmTermin">OHNE Termin (bei Anschaltung)</strong></li>
-                        <li>STM absenden</li>
-                        <li>Ticket-Status: "In Bearbeitung LineOwner"</li>
-                    </ol>
-                </div>
-
-                <button class="btn-restart" onclick="restart()">
-                    🔄 Neues Ticket bearbeiten
-                </button>
             </div>
 
-            <!-- FINAL RESULT: Kunde kontaktieren -->
-            <div class="step" id="final-contact">
-                <h2 class="question">📞 Kunde kontaktieren</h2>
-                
-                <div class="info-box warning">
-                    <strong>⚠️ Mehr Infos nötig:</strong>
-                    Ohne Kundengespräch kann das Ticket nicht bearbeitet werden!
+            <!-- ===== FINAL: Kunde kontaktieren ===== -->
+            <div id="final-contact" class="step">
+                <div class="result-box warning">
+                    <h2>📞 Kunde kontaktieren</h2>
+                    <p>Weitere Informationen erforderlich</p>
                 </div>
 
-                <div class="result-box">
-                    <h3>📋 Was im Gespräch klären:</h3>
-                    <ul style="line-height: 2; padding-left: 20px;">
-                        <li>Wann war der letzte erfolgreiche Verbindungsaufbau?</li>
-                        <li>Gab es einen längeren Urlaub/Abwesenheit?</li>
-                        <li>War die Leitung jemals im Betrieb? (bei Anschaltung)</li>
-                        <li>Welche Fehlermeldungen erscheinen am Router?</li>
-                        <li>ONT LED-Status gemeinsam prüfen</li>
-                    </ul>
+                <div class="info-box">
+                    <strong>📋 Folgende Informationen beim Kunden erfragen:</strong><br><br>
+                    
+                    <strong>Bei unbekanntem LineOwner:</strong><br>
+                    • Anschlussdaten prüfen<br>
+                    • Im CRM nachschauen<br>
+                    • Ggf. beim Kunden nachfragen<br><br>
+                    
+                    <strong>Bei fehlender Aktivitäts-Info:</strong><br>
+                    • "Hatten Sie schon einmal Internet über diesen Anschluss?"<br>
+                    • Installationsdatum erfragen<br><br>
+                    
+                    <strong>Bei fehlendem Anschaltdatum:</strong><br>
+                    • Bestellung prüfen<br>
+                    • Anschaltdatum recherchieren<br>
+                    • Ohne Datum: Ticket kann nicht bearbeitet werden
                 </div>
 
-                <div class="info-box tip">
-                    <strong>💡 Nach dem Gespräch:</strong>
-                    Troubleshooter erneut durchlaufen mit den neuen Infos!
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="restart()">
+                        🔄 Mit vollständigen Infos neu starten
+                    </button>
                 </div>
-
-                <button class="btn-restart" onclick="restart()">
-                    🔄 Troubleshooter neu starten
-                </button>
             </div>
 
-            <!-- NAVIGATION -->
-            <div class="nav-buttons" id="navButtons">
-                <button class="btn-back" onclick="previousStep()" id="backButton">
-                    ⬅️ Zurück
-                </button>
-                <button class="btn-restart" onclick="restart()">
-                    🔄 Von vorne
-                </button>
-            </div>
         </div>
     </div>
+</body>
+
 
     <script>
         // ===== GLOBALE VARIABLEN =====
         let currentStep = 1;
         let maxSteps = 10;
-        let history = ['step1']; // Für Back-Button
+        let history = ['step1'];
         
         let data = {
-            lineId: '',
             lineOwner: '',
             hasActivity: null,
             hasAnschaltdatum: null,
@@ -1040,7 +897,8 @@
             verkabelung: '',
             ontStatus: '',
             verbindung: '',
-            portreset: ''
+            portreset: '',
+            performanceData: null
         };
 
         // ===== PROGRESS BAR UPDATE =====
@@ -1052,24 +910,19 @@
 
         // ===== STEP NAVIGATION =====
         function showStep(stepId) {
-            // Alle Steps verstecken
             document.querySelectorAll('.step').forEach(step => {
                 step.classList.remove('active');
             });
             
-            // Gewünschten Step zeigen
             document.getElementById(stepId).classList.add('active');
             
-            // History updaten
             if (history[history.length - 1] !== stepId) {
                 history.push(stepId);
             }
             
-            // Back-Button anzeigen/verstecken
             document.getElementById('backButton').style.display = 
                 history.length > 1 ? 'block' : 'none';
             
-            // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
@@ -1081,7 +934,7 @@
 
         function previousStep() {
             if (history.length > 1) {
-                history.pop(); // Aktuellen Step entfernen
+                history.pop();
                 const prevStep = history[history.length - 1];
                 currentStep--;
                 updateProgress();
@@ -1089,10 +942,28 @@
             }
         }
 
+        function restart() {
+            currentStep = 1;
+            history = ['step1'];
+            data = {
+                lineOwner: '',
+                hasActivity: null,
+                hasAnschaltdatum: null,
+                ticketType: '',
+                routerModel: '',
+                verkabelung: '',
+                ontStatus: '',
+                verbindung: '',
+                portreset: '',
+                performanceData: null
+            };
+            updateProgress();
+            showStep('step1');
+        }
+
         // ===== STEP 1: LineOwner =====
         function setLineOwner(owner) {
             data.lineOwner = owner;
-            data.lineId = document.getElementById('lineId').value;
             nextStep('step2');
         }
 
@@ -1101,13 +972,10 @@
             data.hasActivity = activity;
             
             if (activity === 'yes') {
-                // Hat Aktivität → Störung → Störungstyp wählen
                 nextStep('step3');
             } else if (activity === 'no') {
-                // Keine Aktivität → Anschaltdatum prüfen
                 nextStep('step2b');
             } else {
-                // Unsicher → Kunde kontaktieren
                 showStep('final-contact');
             }
         }
@@ -1117,11 +985,9 @@
             data.hasAnschaltdatum = hasDate;
             
             if (hasDate === 'yes') {
-                // Anschaltdatum bekannt → Zu Anschaltung
                 data.ticketType = 'anschaltung';
                 nextStep('step4-router');
             } else {
-                // Kein Datum → Kunde kontaktieren
                 showStep('final-contact');
             }
         }
@@ -1158,18 +1024,15 @@
             data.ontStatus = status;
             
             if (status === 'kein-strom') {
-                // Kein Strom → Kunde muss Strom prüfen
                 alert('⚠️ Kunde muss Stromversorgung am ONT prüfen!\n\nDanach Troubleshooter erneut durchlaufen.');
                 return;
             }
             
-            // Weiter zur Router-Konfiguration
             if (data.routerModel === 'fritzbox') {
                 nextStep('step7-fritzbox');
             } else if (data.routerModel === 'homebox') {
                 nextStep('step7-homebox');
             } else {
-                // Dritthersteller-Router
                 alert('⚠️ Dritthersteller-Router:\n\nBitte Bedienungsanleitung des Routers zur Konfiguration nutzen.\n\nAllgemein: o2 als Anbieter wählen, Glasfaser/FTTH als Anschlussart.');
                 nextStep('step8-verbindung');
             }
@@ -1180,11 +1043,9 @@
             data.verbindung = status;
             
             if (status === 'ok') {
-                // Verbindung OK → Erfolg!
                 generateSuccessDocumentation();
                 showStep('final-success');
             } else {
-                // Verbindung NOK → Portreset
                 nextStep('step9-portreset');
             }
         }
@@ -1194,11 +1055,9 @@
             data.portreset = status;
             
             if (status === 'ok') {
-                // Nach Portreset OK → Erfolg!
                 generateSuccessDocumentation();
                 showStep('final-success');
             } else {
-                // Nach Portreset NOK → STM
                 generateSTMDocumentation('anschaltung');
                 showStep('final-stm');
             }
@@ -1237,7 +1096,6 @@
                 return;
             }
             
-            // Schwellenwerte berechnen
             let minDownload, minUpload;
             
             switch(tarif) {
@@ -1312,7 +1170,6 @@
 === TICKET ERFOLGREICH BEARBEITET ===
 
 LineOwner: ${data.lineOwner}
-${data.lineId ? 'LineID: ' + data.lineId : ''}
 Ticket-Typ: ${data.ticketType}
 
 Durchgeführte Maßnahmen:
@@ -1340,7 +1197,6 @@ ${new Date().toLocaleString('de-DE')}
 === TICKET INS WFC ===
 
 LineOwner: ${data.lineOwner}
-${data.lineId ? 'LineID: ' + data.lineId : ''}
 
 Kunde ${kundeErreicht ? 'erreicht' : 'nicht erreicht'}.
 
@@ -1377,8 +1233,6 @@ ${new Date().toLocaleString('de-DE')}
 
 Anschaltung - Kein Signal am ONT
 
-LineID: ${data.lineId || '[Hier eintragen]'}
-
 Sachverhalt:
 - FTTH-Anschaltung
 - Router konfiguriert (${data.routerModel})
@@ -1396,8 +1250,6 @@ ${new Date().toLocaleString('de-DE')}
 === STM AN ${data.lineOwner.toUpperCase()} ===
 
 Komplettausfall - Kein Internet
-
-LineID: ${data.lineId || '[Hier eintragen]'}
 
 Sachverhalt:
 - Kunde komplett offline seit [Datum eintragen]
@@ -1419,8 +1271,6 @@ ${new Date().toLocaleString('de-DE')}
 
 Sporadische Verbindungsabbrüche
 
-LineID: ${data.lineId || '[Hier eintragen]'}
-
 Sachverhalt:
 - Verbindung bricht wiederholt ab
 - 171 LAC Fehlercode: [Code eintragen]
@@ -1441,9 +1291,33 @@ ${new Date().toLocaleString('de-DE')}
 
 Performance unter Schwellenwert
 
-LineID: ${data.lineId || '[Hier eintragen]'}
-
 Sachverhalt:
 - Speedtest per LAN durchgeführt
 - Download: ${perf.download} Mbit/s (Min: ${perf.minDownload} Mbit/s)
-- Upload: ${perf.upload} Mbit/s
+- Upload: ${perf.upload} Mbit/s (Min: ${perf.minUpload} Mbit/s)
+- Werte unter Schwellenwert
+
+Bitte Leitung prüfen.
+
+Termin: [Mit Kunde vereinbaren]
+
+${new Date().toLocaleString('de-DE')}
+                `.trim();
+            }
+            
+            document.getElementById('stmTermin').textContent = termin;
+            document.getElementById('stmDocumentation').textContent = doc;
+        }
+
+        // ===== COPY TO CLIPBOARD =====
+        function copyToClipboard(elementId) {
+            const text = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('✅ In Zwischenablage kopiert!');
+            });
+        }
+
+        // ===== INITIALISIERUNG =====
+        updateProgress();
+    </script>
+</html>
