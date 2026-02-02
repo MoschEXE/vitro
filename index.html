@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VitroConnect Troubleshooting</title>
+    <title>Vitro Troubleshooter</title>
     <style>
+        /* ===== GRUNDLEGENDES DESIGN ===== */
         * {
             margin: 0;
             padding: 0;
@@ -15,1159 +16,1434 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             padding: 20px;
+            color: #333;
         }
 
         .container {
+            max-width: 900px;
+            margin: 0 auto;
             background: white;
             border-radius: 20px;
             box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            max-width: 800px;
-            width: 100%;
-            padding: 40px;
+            overflow: hidden;
         }
 
+        /* ===== HEADER ===== */
         .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
             text-align: center;
-            margin-bottom: 30px;
         }
 
         .header h1 {
-            color: #667eea;
-            font-size: 2em;
+            font-size: 2.5em;
             margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
         .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress-container {
+            background: #f0f0f0;
+            padding: 20px 30px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            text-align: center;
             color: #666;
             font-size: 0.9em;
         }
 
-        .progress-bar {
-            background: #e0e0e0;
-            height: 8px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            overflow: hidden;
+        /* ===== CONTENT BEREICH ===== */
+        .content {
+            padding: 40px;
         }
 
-        .progress-fill {
-            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
-            height: 100%;
-            transition: width 0.3s ease;
+        .step {
+            display: none;
+            animation: fadeIn 0.3s ease;
         }
 
-        .question-box {
-            margin-bottom: 30px;
+        .step.active {
+            display: block;
         }
 
-        .question-box h2 {
-            color: #333;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .question {
             font-size: 1.5em;
-            margin-bottom: 20px;
-        }
-
-        .options {
-            display: grid;
-            gap: 15px;
-        }
-
-        .option-btn {
-            background: #f5f5f5;
-            border: 2px solid #e0e0e0;
-            border-radius: 12px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
-            font-size: 1.1em;
-        }
-
-        .option-btn:hover {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .result-box {
-            background: #f0f8ff;
-            border-left: 5px solid #667eea;
-            padding: 25px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-        }
-
-        .result-box h2 {
             color: #667eea;
-            margin-bottom: 15px;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        /* ===== BUTTONS ===== */
+        .button-group {
             display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .result-section {
-            margin-bottom: 20px;
-        }
-
-        .result-section h3 {
-            color: #555;
-            margin-bottom: 10px;
-            font-size: 1.1em;
-        }
-
-        .result-section ol, .result-section ul {
-            margin-left: 20px;
-            line-height: 1.8;
-        }
-
-        .result-section li {
-            margin-bottom: 8px;
-        }
-
-        .tip-box {
-            background: #fff3cd;
-            border-left: 4px solid #ffc107;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-
-        .warning-box {
-            background: #f8d7da;
-            border-left: 4px solid #dc3545;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-
-        .info-box {
-            background: #d1ecf1;
-            border-left: 4px solid #17a2b8;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-        }
-
-        .action-buttons {
-            display: flex;
+            flex-direction: column;
             gap: 15px;
             margin-top: 20px;
         }
 
         .btn {
-            padding: 12px 24px;
+            padding: 18px 30px;
             border: none;
-            border-radius: 8px;
+            border-radius: 12px;
+            font-size: 1.1em;
             cursor: pointer;
-            font-size: 1em;
             transition: all 0.3s ease;
+            font-weight: 600;
+            text-align: left;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
         }
 
-        .btn-primary {
+        .btn:hover {
             background: #667eea;
             color: white;
-        }
-
-        .btn-primary:hover {
-            background: #5568d3;
-            transform: translateY(-2px);
+            transform: translateX(5px);
             box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
         }
 
-        .btn-secondary {
-            background: #6c757d;
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
+            border: none;
         }
 
-        .btn-secondary:hover {
-            background: #5a6268;
+        .btn-primary:hover {
+            transform: scale(1.02);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
         }
 
-        .btn-copy {
-            background: #28a745;
-            color: white;
+        /* ===== INPUT FELDER ===== */
+        .input-group {
+            margin: 20px 0;
         }
 
-        .btn-copy:hover {
-            background: #218838;
+        .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #666;
+            font-weight: 600;
         }
 
-        .hidden {
-            display: none;
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
         }
 
-        .breadcrumb {
-            color: #999;
-            font-size: 0.9em;
+        .input-group input:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* ===== INFO BOXEN ===== */
+        .info-box {
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 5px solid;
+        }
+
+        .info-box.tip {
+            background: #e3f2fd;
+            border-color: #2196F3;
+            color: #1565C0;
+        }
+
+        .info-box.warning {
+            background: #fff3e0;
+            border-color: #FF9800;
+            color: #E65100;
+        }
+
+        .info-box.success {
+            background: #e8f5e9;
+            border-color: #4CAF50;
+            color: #2E7D32;
+        }
+
+        .info-box.error {
+            background: #ffebee;
+            border-color: #f44336;
+            color: #c62828;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 1.1em;
+        }
+
+        /* ===== LED STATUS ===== */
+        .led-status {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .led-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        .led-indicator.green { background: #4CAF50; box-shadow: 0 0 10px #4CAF50; }
+        .led-indicator.red { background: #f44336; box-shadow: 0 0 10px #f44336; }
+        .led-indicator.orange { background: #FF9800; box-shadow: 0 0 10px #FF9800; }
+        .led-indicator.off { background: #666; }
+
+        /* ===== RESULT BOX ===== */
+        .result-box {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 2px solid #667eea;
+        }
+
+        .result-box h3 {
+            color: #667eea;
             margin-bottom: 15px;
         }
 
-        code {
-            background: #f5f5f5;
-            padding: 2px 6px;
-            border-radius: 4px;
+        .result-box pre {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            white-space: pre-wrap;
             font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+
+        .copy-btn {
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
+        .copy-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* ===== NAVIGATION BUTTONS ===== */
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn-back {
+            padding: 12px 25px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: #5a6268;
+        }
+
+        .btn-restart {
+            padding: 12px 25px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-restart:hover {
+            background: #c82333;
+        }
+
+        /* ===== CHECKLIST ===== */
+        .checklist {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .checklist-item {
+            padding: 12px;
+            margin: 8px 0;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .checklist-item input[type="checkbox"] {
+            margin-right: 10px;
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        /* ===== RESPONSIVE (minimal, da kein Mobile) ===== */
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 0;
+            }
+            
+            .content {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
+        <!-- HEADER -->
         <div class="header">
-            <h1>🔧 VitroConnect Troubleshooting</h1>
+            <h1>⚡ Vitro Troubleshooter</h1>
+            <p>Schnelle Lösung für VitroConnect-Tickets</p>
         </div>
 
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressBar"></div>
+        <!-- PROGRESS BAR -->
+        <div class="progress-container">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <div class="progress-text" id="progressText">Schritt 1 von 10</div>
         </div>
 
-        <div class="breadcrumb" id="breadcrumb"></div>
+        <!-- CONTENT -->
+        <div class="content">
+            <!-- STEP 1: LineOwner Check -->
+            <div class="step active" id="step1">
+                <h2 class="question">🎯 Schritt 1: LineOwner identifizieren</h2>
+                
+                <div class="info-box tip">
+                    <strong>💡 Tipp:</strong>
+                    Kundennummer in TITAN eingeben → LineID anzeigen lassen
+                </div>
 
-        <div id="content"></div>
+                <div class="input-group">
+                    <label for="lineId">LineID eingeben (optional, zur Dokumentation):</label>
+                    <input type="text" id="lineId" placeholder="z.B. VITR123456">
+                </div>
 
-        <div class="action-buttons hidden" id="actionButtons">
-            <button class="btn btn-secondary" onclick="goBack()">← Zurück</button>
-            <button class="btn btn-primary" onclick="restart()">🔄 Von vorne</button>
+                <div class="button-group">
+                    <button class="btn" onclick="setLineOwner('UGG')">
+                        🔵 UGG (UGG GmbH & Co. KG)
+                    </button>
+                    <button class="btn" onclick="setLineOwner('EWE')">
+                        🟢 EWE (EWE Tel GmbH)
+                    </button>
+                    <button class="btn" onclick="setLineOwner('Vitro')">
+                        🟣 Vitro (vitroconnect GmbH)
+                    </button>
+                </div>
+
+                <div class="info-box warning" style="margin-top: 20px;">
+                    <strong>⚠️ Wichtig:</strong>
+                    Der LineOwner bestimmt, an wen du Störungen eskalierst!
+                </div>
+            </div>
+
+            <!-- STEP 2: Aktivität Check -->
+            <div class="step" id="step2">
+                <h2 class="question">📅 Schritt 2: Aktivität prüfen</h2>
+                
+                <div class="info-box tip">
+                    <strong>💡 Wie prüfen?</strong>
+                    In TITAN die letzten 7 Tage auf Verbindungsaktivität checken
+                </div>
+
+                <div class="button-group">
+                    <button class="btn" onclick="setActivity('yes')">
+                        ✅ JA - Aktivität vorhanden → Störung
+                    </button>
+                    <button class="btn" onclick="setActivity('no')">
+                        ❌ NEIN - Keine Aktivität → Anschaltung
+                    </button>
+                    <button class="btn" onclick="setActivity('unsure')">
+                        ❓ UNSICHER - Kunde kontaktieren nötig
+                    </button>
+                </div>
+
+                <div class="info-box warning" style="margin-top: 20px;">
+                    <strong>⚠️ Sonderfälle:</strong>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Kunde war 1 Monat im Urlaub + Ausfall > 7 Tage = trotzdem Störung</li>
+                        <li>Anschaltung vor 2 Monaten, aber nie im Betrieb = Anschaltung</li>
+                        <li>Bei Unsicherheit: IMMER erst mit Kunde telefonieren!</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- STEP 2b: Anschaltdatum Check (wenn keine Aktivität) -->
+            <div class="step" id="step2b">
+                <h2 class="question">📋 Anschaltdatum im Ticket?</h2>
+                
+                <div class="info-box tip">
+                    <strong>💡 Wo finden?</strong>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Steht meist drin, wenn Ticket von Hotline kam</li>
+                        <li>Fehlt oft bei Tickets aus "o2 my service" App</li>
+                        <li>Dann: Infos manuell zusammensuchen</li>
+                    </ul>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn" onclick="setAnschaltdatum('yes')">
+                        ✅ JA - Anschaltdatum bekannt → Weiter
+                    </button>
+                    <button class="btn" onclick="setAnschaltdatum('no')">
+                        ❌ NEIN - Kunde kontaktieren nötig
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 3: Störungstyp wählen -->
+            <div class="step" id="step3">
+                <h2 class="question">🔍 Schritt 3: Störungstyp wählen</h2>
+                
+                <div class="button-group">
+                    <button class="btn" onclick="setTicketType('anschaltung')">
+                        🆕 FTTH-Anschaltung (Ersteinrichtung)
+                    </button>
+                    <button class="btn" onclick="setTicketType('komplettausfall')">
+                        🔴 Komplettausfall (Kunde komplett offline)
+                    </button>
+                    <button class="btn" onclick="setTicketType('sporadisch')">
+                        🟡 Sporadische Ausfälle (immer wieder Abbrüche)
+                    </button>
+                    <button class="btn" onclick="setTicketType('performance')">
+                        🐌 Performance-Probleme (langsame Verbindung)
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 4: Router-Modell (für Anschaltung) -->
+            <div class="step" id="step4-router">
+                <h2 class="question">📦 Router-Modell?</h2>
+                
+                <div class="info-box tip">
+                    <strong>💡 Warum wichtig?</strong>
+                    Homebox und Fritzbox haben unterschiedliche Menüs!
+                </div>
+
+                <div class="button-group">
+                    <button class="btn" onclick="setRouterModel('fritzbox')">
+                        🔴 Fritzbox (alle Modelle)
+                    </button>
+                    <button class="btn" onclick="setRouterModel('homebox')">
+                        ⚪ Homebox 3
+                    </button>
+                    <button class="btn" onclick="setRouterModel('other')">
+                        ❓ Anderer Router (Dritthersteller)
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 5: Verkabelung prüfen -->
+            <div class="step" id="step5-verkabelung">
+                <h2 class="question">🔌 Verkabelung prüfen</h2>
+                
+                <div class="info-box warning">
+                    <strong>⚠️ WICHTIG:</strong>
+                    Falsche Verkabelung = häufigster Fehler bei Anschaltungen!
+                </div>
+
+                <div class="checklist">
+                    <h3 style="margin-bottom: 15px;">✅ Checkliste mit Kunde durchgehen:</h3>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check1">
+                        <label for="check1">Glasfaserkabel von Wand → ONT (blaues/grünes Kabel)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check2">
+                        <label for="check2">Netzwerkkabel ONT → Router (meist gelbes LAN-Kabel)</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check3">
+                        <label for="check3">Strom am ONT angeschlossen</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="check4">
+                        <label for="check4">Strom am Router angeschlossen</label>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn" onclick="checkVerkabelung('mit-ont')">
+                        ✅ Mit ONT (Standard bei VitroConnect)
+                    </button>
+                    <button class="btn" onclick="checkVerkabelung('ohne-ont')">
+                        🔄 Ohne ONT (Glasfaser direkt in Router)
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 6: ONT LED Status -->
+            <div class="step" id="step6-ont">
+                <h2 class="question">💡 ONT LED-Status prüfen</h2>
+                
+                <div class="info-box tip">
+                    <strong>💡 Was sagt uns der ONT?</strong>
+                    Die LEDs zeigen, wo genau das Problem liegt!
+                </div>
+
+                <h3 style="margin: 20px 0;">Welche LEDs leuchten?</h3>
+
+                <div class="led-status">
+                    <div class="led-indicator green"></div>
+                    <div>
+                        <strong>Power:</strong> Betriebsbereitschaft<br>
+                        <small style="color: #666;">Muss AN sein, sonst kein Strom!</small>
+                    </div>
+                </div>
+
+                <div class="led-status">
+                    <div class="led-indicator green"></div>
+                    <div>
+                        <strong>Sync / Connection:</strong> Kommunikation nach außen<br>
+                        <small style="color: #666;">Muss AN sein für Internet</small>
+                    </div>
+                </div>
+
+                <div class="led-status">
+                    <div class="led-indicator green"></div>
+                    <div>
+                        <strong>ETH:</strong> Verbindung zum Router<br>
+                        <small style="color: #666;">Sollte AN oder BLINKEN</small>
+                    </div>
+                </div>
+
+                <div class="led-status">
+                    <div class="led-indicator off"></div>
+                    <div>
+                        <strong>Alarm:</strong> Störungsanzeige<br>
+                        <small style="color: #666;">Sollte AUS sein (grau/schwarz)</small>
+                    </div>
+                </div>
+
+                <h3 style="margin: 30px 0 15px 0;">Aktueller Status:</h3>
+                
+                <div class="button-group">
+                    <button class="btn" onclick="setONTStatus('normal')">
+                        ✅ Alles grün, nur Alarm aus → Normalbetrieb
+                    </button>
+                    <button class="btn" onclick="setONTStatus('anschaltung')">
+                        🟡 Power AN, Sync AUS, ETH blinkt, Alarm ROT<br>
+                        <small style="display: block; margin-top: 5px; opacity: 0.7;">
+                        → Typisch bei Anschaltung (ONT bereit, kein Signal von UGG)
+                        </small>
+                    </button>
+                    <button class="btn" onclick="setONTStatus('kein-strom')">
+                        🔴 Power AUS → Kein Strom am ONT
+                    </button>
+                    <button class="btn" onclick="setONTStatus('kein-sync')">
+                        🟠 Power AN, Sync AUS, Alarm ROT<br>
+                        <small style="display: block; margin-top: 5px; opacity: 0.7;">
+                        → Leitungsproblem (UGG muss prüfen)
+                        </small>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 7: Router konfigurieren (Fritzbox) -->
+            <div class="step" id="step7-fritzbox">
+                <h2 class="question">⚙️ Fritzbox konfigurieren</h2>
+                
+                <div class="info-box warning">
+                    <strong>⚠️ WICHTIG bei Anschaltung:</strong>
+                    Router TROTZDEM einrichten, auch wenn ONT noch kein Signal hat!<br>
+                    <strong>Vorteil:</strong> Sobald UGG das Signal schaltet, ist Kunde sofort online!
+                </div>
+
+                <div class="result-box">
+                    <h3>📋 Fritzbox-Konfiguration (mit ONT):</h3>
+                    <ol style="line-height: 2; padding-left: 20px;">
+                        <li><strong>http://fritz.box</strong> aufrufen</li>
+                        <li><strong>Internet → Zugangsdaten → Anbieter</strong></li>
+                        <li><strong>o2</strong> auswählen</li>
+                        <li>
+                            <strong>Manchmal erscheinen 2 Reiter</strong> (OS-abhängig):<br>
+                            → <strong>"Glasfaser"</strong> anklicken
+                        </li>
+                        <li>
+                            <strong>Zugangsart:</strong> o2 FTTH auswählen<br>
+                            <small style="color: #666;">(Feld erscheint nur bei Anschluss über ONT/WAN/LAN1)</small>
+                        </li>
+                        <li><strong>Benutzername:</strong> leer lassen</li>
+                        <li><strong>Kennwort:</strong> leer lassen</li>
+                        <li><strong>Übernehmen</strong> klicken</li>
+                        <li>Router startet neu (ca. 2 Minuten warten)</li>
+                    </ol>
+                </div>
+
+                <div class="info-box tip">
+                    <strong>💡 Ohne ONT (Direktanschluss)?</strong>
+                    Dann erscheint statt "Zugangsart" das Feld:<br>
+                    <strong>"ONT-Installationskennung"</strong><br>
+                    → Diese aus VitroConnect Tool übernehmen
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary btn" onclick="nextStep('step8-verbindung')">
+                        ➡️ Weiter zur Verbindungsprüfung
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 7b: Router konfigurieren (Homebox) -->
+            <div class="step" id="step7-homebox">
+                <h2 class="question">⚙️ Homebox konfigurieren</h2>
+                
+                <div class="result-box">
+                    <h3>📋 Homebox-Konfiguration:</h3>
+                    <ol style="line-height: 2; padding-left: 20px;">
+                        <li><strong>http://o2.box</strong> aufrufen</li>
+                        <li><strong>Internet → Internetzugang</strong></li>
+                        <li><strong>Anbieter:</strong> o2</li>
+                        <li><strong>Anschlussart:</strong> Glasfaser (FTTH)</li>
+                        <li><strong>Übernehmen</strong> → Router startet neu</li>
+                    </ol>
+                </div>
+
+                <div class="info-box tip">
+                    <strong>💡 LED-Status Homebox:</strong>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>Power LED: grün = OK</li>
+                        <li>Internet LED: grün = verbunden</li>
+                        <li>WLAN LED: grün = aktiv</li>
+                    </ul>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary btn" onclick="nextStep('step8-verbindung')">
+                        ➡️ Weiter zur Verbindungsprüfung
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 8: Verbindung testen -->
+            <div class="step" id="step8-verbindung">
+                <h2 class="question">🌐 Verbindung testen</h2>
+                
+                <div class="info-box tip">
+                    <strong>💡 Wie testen?</strong>
+                    <ol style="margin-top: 10px; padding-left: 20px;">
+                        <li>Kunde soll <strong>www.google.de</strong> aufrufen</li>
+                        <li>Oder: Router-Menü → Internet → Online-Monitor</li>
+                    </ol>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn" onclick="setVerbindung('ok')">
+                        ✅ Verbindung OK - Internet funktioniert!
+                    </button>
+                    <button class="btn" onclick="setVerbindung('nok')">
+                        ❌ Verbindung NOK - Kein Internet
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 9: Portreset durchführen -->
+            <div class="step" id="step9-portreset">
+                <h2 class="question">🔄 Portreset durchführen</h2>
+                
+                <div class="info-box warning">
+                    <strong>⚠️ Wichtig:</strong>
+                    Portreset immer VOR Eskalation an UGG durchführen!
+                </div>
+
+                <div class="result-box">
+                    <h3>📋 Portreset-Anleitung:</h3>
+                    <ol style="line-height: 2; padding-left: 20px;">
+                        <li><strong>In TITAN:</strong> Portreset-Funktion aufrufen</li>
+                        <li><strong>Parallel:</strong> ONT + Router 10 Sekunden vom Strom trennen</li>
+                        <li><strong>Warten:</strong> 30 Sekunden</li>
+                        <li><strong>Einschalten:</strong> Erst ONT, dann Router</li>
+                        <li><strong>Warten:</strong> 3-5 Minuten (ONT Sync + Router Boot)</li>
+                        <li><strong>Testen:</strong> Verbindung erneut prüfen</li>
+                    </ol>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn" onclick="setPortreset('ok')">
+                        ✅ Nach Portreset: Internet funktioniert!
+                    </button>
+                    <button class="btn" onclick="setPortreset('nok')">
+                        ❌ Nach Portreset: Immer noch kein Internet
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 10: Komplettausfall bearbeiten -->
+            <div class="step" id="step10-komplettausfall">
+                <h2 class="question">🔴 Komplettausfall bearbeiten</h2>
+                
+                <div class="info-box warning">
+                    <strong>⚠️ Definition Komplettausfall:</strong>
+                    Kunde hat GAR KEIN Internet mehr (nicht nur langsam)
+                </div>
+
+                <h3 style="margin: 20px 0;">Quick-Checks:</h3>
+                
+                <div class="checklist">
+                    <div class="checklist-item">
+                        <input type="checkbox" id="kcheck1">
+                        <label for="kcheck1">ONT LEDs geprüft?</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="kcheck2">
+                        <label for="kcheck2">Router-Verkabelung OK?</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="kcheck3">
+                        <label for="kcheck3">Router neu gestartet?</label>
+                    </div>
+                    <div class="checklist-item">
+                        <input type="checkbox" id="kcheck4">
+                        <label for="kcheck4">Portreset durchgeführt?</label>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button class="btn" onclick="komplettausfallResolved()">
+                        ✅ Problem gelöst - Internet läuft wieder
+                    </button>
+                    <button class="btn" onclick="komplettausfallEskalieren()">
+                        📋 An LineOwner eskalieren (STM erstellen)
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 11: Sporadische Ausfälle -->
+            <div class="step" id="step11-sporadisch">
+                <h2 class="question">🟡 Sporadische Ausfälle bearbeiten</h2>
+                
+                <div class="info-box warning">
+                    <strong>⚠️ Definition:</strong>
+                    Verbindung bricht immer wieder ab, aber kommt zurück
+                </div>
+
+                <h3 style="margin: 20px 0;">Häufige Ursachen:</h3>
+                
+                <div class="info-box tip">
+                    <strong>1️⃣ 171 LAC-Fehler prüfen:</strong><br>
+                    <ul style="margin-top: 10px; padding-left: 20px;">
+                        <li>In TITAN: 171 LAC Log anschauen</li>
+                        <li>Fehlercode dokumentieren</li>
+                        <li>Im Ticket als Fehlerbeschreibung aufnehmen</li>
+                    </ul>
+                </div>
+
+                <div class="info-box tip">
+                    <strong>2️⃣ Überhitzung:</strong><br>
+                    Router steht in geschlossenem Schrank? → Belüftung prüfen
+                </div>
+
+                <div class="info-box tip">
+                    <strong>3️⃣ Defekte Hardware:</strong><br>
+                    Router-LEDs flackern? → Austausch nötig
+                </div>
+
+                <div class="button-group">
+                    <button class="btn" onclick="sporadischWFC()">
+                        ⏸️ WFC (Kunde soll 24-48h beobachten)
+                    </button>
+                    <button class="btn" onclick="sporadischEskalieren()">
+                        📋 An LineOwner eskalieren
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 12: Performance-Probleme -->
+            <div class="step" id="step12-performance">
+                <h2 class="question">🐌 Performance-Probleme bearbeiten</h2>
+                
+                <div class="info-box tip">
+                    <strong>💡 Wichtig:</strong>
+                    Erst Schwellenwerte prüfen, bevor du eskalierst!
+                </div>
+
+                <h3 style="margin: 20px 0;">Schwellenwerte:</h3>
+                
+                <div class="result-box">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr style="background: #f0f0f0;">
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Tarif</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Min. Download</th>
+                            <th style="padding: 10px; text-align: left; border: 1px solid #ddd;">Min. Upload</th>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">50 Mbit/s</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">25 Mbit/s (50%)</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">5 Mbit/s (50%)</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">100 Mbit/s</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">50 Mbit/s (50%)</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">20 Mbit/s (50%)</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">250 Mbit/s</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">125 Mbit/s (50%)</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">20 Mbit/s (40%)</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 10px; border: 1px solid #ddd;">1000 Mbit/s</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">500 Mbit/s (50%)</td>
+                            <td style="padding: 10px; border: 1px solid #ddd;">100 Mbit/s (20%)</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="info-box warning">
+                    <strong>⚠️ Wichtig:</strong>
+                    Speedtest IMMER per LAN-Kabel machen, nicht WLAN!
+                </div>
+
+                <div class="input-group">
+                    <label>Gebuchter Tarif:</label>
+                    <select id="tarif">
+                        <option value="50">50 Mbit/s</option>
+                        <option value="100">100 Mbit/s</option>
+                        <option value="250">250 Mbit/s</option>
+                        <option value="1000">1000 Mbit/s (1 Gbit/s)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label>Gemessener Download (Mbit/s):</label>
+                    <input type="number" id="download" placeholder="z.B. 45">
+                </div>
+
+                <div class="input-group">
+                    <label>Gemessener Upload (Mbit/s):</label>
+                    <input type="number" id="upload" placeholder="z.B. 8">
+                </div>
+
+                <div class="button-group">
+                    <button class="btn-primary btn" onclick="checkPerformance()">
+                        🔍 Schwellenwerte prüfen
+                    </button>
+                </div>
+
+                <div id="performanceResult"></div>
+            </div>
+
+            <!-- FINAL RESULT: Ticket schließen -->
+            <div class="step" id="final-success">
+                <h2 class="question">✅ Ticket erfolgreich bearbeitet!</h2>
+                
+                <div class="info-box success">
+                    <strong>🎉 Glückwunsch!</strong>
+                    Problem gelöst - Kunde ist zufrieden!
+                </div>
+
+                <div class="result-box">
+                    <h3>📋 Ticket-Dokumentation (Copy & Paste):</h3>
+                    <pre id="finalDocumentation"></pre>
+                    <button class="copy-btn" onclick="copyToClipboard('finalDocumentation')">
+                        📋 Text kopieren
+                    </button>
+                </div>
+
+                <div class="info-box tip">
+                    <strong>💡 Nächste Schritte:</strong>
+                    <ol style="margin-top: 10px; padding-left: 20px;">
+                        <li>Text in Ticket einfügen</li>
+                        <li>Ticket schließen</li>
+                        <li>Optional: Courtesy Call beim Kunden (falls angebracht)</li>
+                    </ol>
+                </div>
+
+                <button class="btn-restart" onclick="restart()">
+                    🔄 Neues Ticket bearbeiten
+                </button>
+            </div>
+
+            <!-- FINAL RESULT: WFC -->
+            <div class="step" id="final-wfc">
+                <h2 class="question">⏸️ Ticket ins WFC</h2>
+                
+                <div class="info-box warning">
+                    <strong>⚠️ Waiting for Close:</strong>
+                    Kunde soll Anschluss 24-48h beobachten
+                </div>
+
+                <div class="result-box">
+                    <h3>📋 WFC-Dokumentation (Copy & Paste):</h3>
+                    <pre id="wfcDocumentation"></pre>
+                    <button class="copy-btn" onclick="copyToClipboard('wfcDocumentation')">
+                        📋 Text kopieren
+                    </button>
+                </div>
+
+                <div class="info-box tip">
+                    <strong>💡 Nächste Schritte:</strong>
+                    <ol style="margin-top: 10px; padding-left: 20px;">
+                        <li>Text in Ticket einfügen</li>
+                        <li>Ticket-Status: WFC setzen</li>
+                        <li>Wiedervorlage: In 48h</li>
+                        <li>Wenn Kunde sich meldet: Erneut prüfen</li>
+                    </ol>
+                </div>
+
+                <button class="btn-restart" onclick="restart()">
+                    🔄 Neues Ticket bearbeiten
+                </button>
+            </div>
+
+            <!-- FINAL RESULT: STM erstellen -->
+            <div class="step" id="final-stm">
+                <h2 class="question">📋 STM erstellen</h2>
+                
+                <div class="info-box warning">
+                    <strong>⚠️ Eskalation an LineOwner:</strong>
+                    <span id="stmLineOwner"></span>
+                </div>
+
+                <div class="result-box">
+                    <h3>📋 STM-Text (Copy & Paste):</h3>
+                    <pre id="stmDocumentation"></pre>
+                    <button class="copy-btn" onclick="copyToClipboard('stmDocumentation')">
+                        📋 Text kopieren
+                    </button>
+                </div>
+
+                <div class="info-box tip">
+                    <strong>💡 STM erstellen:</strong>
+                    <ol style="margin-top: 10px; padding-left: 20px;">
+                        <li>In TITAN: STM-Funktion aufrufen</li>
+                        <li>LineOwner: <strong id="stmLineOwner2"></strong></li>
+                        <li>Fehlertext aus Textbaustein einfügen</li>
+                        <li>Termin: <strong id="stmTermin">OHNE Termin (bei Anschaltung)</strong></li>
+                        <li>STM absenden</li>
+                        <li>Ticket-Status: "In Bearbeitung LineOwner"</li>
+                    </ol>
+                </div>
+
+                <button class="btn-restart" onclick="restart()">
+                    🔄 Neues Ticket bearbeiten
+                </button>
+            </div>
+
+            <!-- FINAL RESULT: Kunde kontaktieren -->
+            <div class="step" id="final-contact">
+                <h2 class="question">📞 Kunde kontaktieren</h2>
+                
+                <div class="info-box warning">
+                    <strong>⚠️ Mehr Infos nötig:</strong>
+                    Ohne Kundengespräch kann das Ticket nicht bearbeitet werden!
+                </div>
+
+                <div class="result-box">
+                    <h3>📋 Was im Gespräch klären:</h3>
+                    <ul style="line-height: 2; padding-left: 20px;">
+                        <li>Wann war der letzte erfolgreiche Verbindungsaufbau?</li>
+                        <li>Gab es einen längeren Urlaub/Abwesenheit?</li>
+                        <li>War die Leitung jemals im Betrieb? (bei Anschaltung)</li>
+                        <li>Welche Fehlermeldungen erscheinen am Router?</li>
+                        <li>ONT LED-Status gemeinsam prüfen</li>
+                    </ul>
+                </div>
+
+                <div class="info-box tip">
+                    <strong>💡 Nach dem Gespräch:</strong>
+                    Troubleshooter erneut durchlaufen mit den neuen Infos!
+                </div>
+
+                <button class="btn-restart" onclick="restart()">
+                    🔄 Troubleshooter neu starten
+                </button>
+            </div>
+
+            <!-- NAVIGATION -->
+            <div class="nav-buttons" id="navButtons">
+                <button class="btn-back" onclick="previousStep()" id="backButton">
+                    ⬅️ Zurück
+                </button>
+                <button class="btn-restart" onclick="restart()">
+                    🔄 Von vorne
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Decision Tree Datenstruktur
-        const decisionTree = {
-            start: {
-                question: "Welcher Provider/Anschlusstyp?",
-                options: [
-                    { text: "EWE / VitroConnect (DSL)", next: "ewe_vitro" },
-                    { text: "UGG (Glasfaser)", next: "ugg_glasfaser" }
-                ]
-            },
-            
-            // ===== EWE/VitroConnect Branch =====
-            ewe_vitro: {
-                question: "Welche Störungsart liegt vor?",
-                options: [
-                    { text: "Komplettausfall", next: "ewe_komplettausfall" },
-                    { text: "Sporadischer Ausfall", next: "ewe_sporadisch" },
-                    { text: "Anschaltung / Einrichtung", next: "ewe_anschaltung" },
-                    { text: "Performance Probleme", next: "ewe_performance" },
-                    { text: "Telefonie Probleme", next: "ewe_telefonie" }
-                ]
-            },
-
-            ewe_komplettausfall: {
-                question: "Hat die Leitung im VitroConnect-Tool eine aktive Session?",
-                options: [
-                    { text: "Ja, Session aktiv", next: "ewe_ka_session_ja" },
-                    { text: "Nein, keine Session", next: "ewe_ka_session_nein" }
-                ]
-            },
-
-            ewe_ka_session_ja: {
-                question: "Zeigt TITAN HDM Daten vom Router?",
-                options: [
-                    { text: "Ja, HDM sichtbar", next: "result_ewe_ka_hdm_ok" },
-                    { text: "Nein, kein HDM", next: "result_ewe_ka_no_hdm" }
-                ]
-            },
-
-            ewe_ka_session_nein: {
-                question: "Wie ist der Port-Status im VitroConnect-Tool?",
-                options: [
-                    { text: "Port UP", next: "ewe_ka_port_up" },
-                    { text: "Port DOWN", next: "result_ewe_ka_port_down" }
-                ]
-            },
-
-            ewe_ka_port_up: {
-                question: "Wie ist der Line-Status?",
-                options: [
-                    { text: "Line UP", next: "result_ewe_ka_line_up" },
-                    { text: "Line DOWN", next: "result_ewe_ka_line_down" }
-                ]
-            },
-
-            // ===== UGG Glasfaser Branch =====
-            ugg_glasfaser: {
-                question: "Welche Störungsart liegt vor?",
-                options: [
-                    { text: "Komplettausfall", next: "ugg_komplettausfall" },
-                    { text: "Sporadischer Ausfall", next: "ugg_sporadisch" },
-                    { text: "Anschaltung / Einrichtung", next: "ugg_anschaltung" },
-                    { text: "Performance Probleme", next: "ugg_performance" },
-                    { text: "Telefonie Probleme", next: "ugg_telefonie" }
-                ]
-            },
-
-            ugg_komplettausfall: {
-                question: "Welche Router-Konfiguration liegt vor?",
-                options: [
-                    { text: "Mit ONT (Standard)", next: "ugg_ka_mit_ont" },
-                    { text: "Direktanschluss (FB5590/5530 ohne ONT)", next: "ugg_ka_direkt" }
-                ]
-            },
-
-            ugg_ka_mit_ont: {
-                question: "Wie ist der ONT-Status im VitroConnect-Tool?",
-                options: [
-                    { text: "ONT UP", next: "ugg_ka_ont_up" },
-                    { text: "ONT DOWN", next: "result_ugg_ka_ont_down" }
-                ]
-            },
-
-            ugg_ka_ont_up: {
-                question: "Hat die Leitung eine aktive PPPoE-Session?",
-                options: [
-                    { text: "Ja, Session aktiv", next: "ugg_ka_session_ja" },
-                    { text: "Nein, keine Session", next: "result_ugg_ka_no_session" }
-                ]
-            },
-
-            ugg_ka_session_ja: {
-                question: "Zeigt TITAN HDM Daten vom Router?",
-                options: [
-                    { text: "Ja, HDM sichtbar", next: "result_ugg_ka_hdm_ok" },
-                    { text: "Nein, kein HDM", next: "result_ugg_ka_no_hdm" }
-                ]
-            },
-
-            ugg_ka_direkt: {
-                question: "Ist die ONT-Installationskennung korrekt hinterlegt?",
-                options: [
-                    { text: "Ja, OVK korrekt", next: "ugg_ka_direkt_ovk_ok" },
-                    { text: "Nein / Nicht sicher", next: "result_ugg_ka_direkt_ovk_fehlt" }
-                ]
-            },
-
-            ugg_ka_direkt_ovk_ok: {
-                question: "Hat die Leitung eine aktive PPPoE-Session?",
-                options: [
-                    { text: "Ja, Session aktiv", next: "result_ugg_ka_direkt_session_ok" },
-                    { text: "Nein, keine Session", next: "result_ugg_ka_direkt_no_session" }
-                ]
-            },
-
-            // ===== Sporadische Ausfälle =====
-            ewe_sporadisch: {
-                question: "Tritt der Ausfall zu bestimmten Zeiten auf?",
-                options: [
-                    { text: "Ja, zu bestimmten Zeiten", next: "result_ewe_sporadisch_zeitabhängig" },
-                    { text: "Nein, unregelmäßig", next: "result_ewe_sporadisch_unregelmäßig" }
-                ]
-            },
-
-            ugg_sporadisch: {
-                question: "Sind Sync-Abbrüche im VitroConnect-Tool sichtbar?",
-                options: [
-                    { text: "Ja, Sync-Abbrüche erkennbar", next: "result_ugg_sporadisch_sync" },
-                    { text: "Nein, Leitung stabil", next: "result_ugg_sporadisch_stabil" }
-                ]
-            },
-
-            // ===== Anschaltung =====
-            ewe_anschaltung: {
-                question: "Ist die Leitung bereits aktiv geschaltet?",
-                options: [
-                    { text: "Ja, laut System aktiv", next: "result_ewe_anschaltung_aktiv" },
-                    { text: "Nein, noch in Bereitstellung", next: "result_ewe_anschaltung_offen" }
-                ]
-            },
-
-            ugg_anschaltung: {
-                question: "Mit oder ohne ONT?",
-                options: [
-                    { text: "Mit ONT", next: "ugg_anschaltung_ont" },
-                    { text: "Direktanschluss (FB5590/5530)", next: "result_ugg_anschaltung_direkt" }
-                ]
-            },
-
-            ugg_anschaltung_ont: {
-                question: "Zeigt der ONT Status-LEDs?",
-                options: [
-                    { text: "Ja, ONT hat Power/Status LEDs", next: "result_ugg_anschaltung_ont_ok" },
-                    { text: "Nein, ONT tot/keine LEDs", next: "result_ugg_anschaltung_ont_tot" }
-                ]
-            },
-
-            // ===== Performance =====
-            ewe_performance: {
-                question: "Wie äußert sich das Performance-Problem?",
-                options: [
-                    { text: "Niedrige Geschwindigkeit", next: "result_ewe_perf_speed" },
-                    { text: "Hohe Latenz / Paketverluste", next: "result_ewe_perf_latency" }
-                ]
-            },
-
-            ugg_performance: {
-                question: "Ist die gebuchte Geschwindigkeit korrekt im System?",
-                options: [
-                    { text: "Ja, Tarif korrekt", next: "result_ugg_perf_tarif_ok" },
-                    { text: "Nein, Tarif falsch/unklar", next: "result_ugg_perf_tarif_falsch" }
-                ]
-            },
-
-            // ===== Telefonie =====
-            ewe_telefonie: {
-                question: "Welches Telefonie-Problem liegt vor?",
-                options: [
-                    { text: "Kann nicht angerufen werden", next: "result_ewe_tel_eingehend" },
-                    { text: "Kann nicht raus telefonieren", next: "result_ewe_tel_ausgehend" },
-                    { text: "Schlechte Sprachqualität", next: "result_ewe_tel_qualität" }
-                ]
-            },
-
-            ugg_telefonie: {
-                question: "Welches Telefonie-Problem liegt vor?",
-                options: [
-                    { text: "Kann nicht angerufen werden", next: "result_ugg_tel_eingehend" },
-                    { text: "Kann nicht raus telefonieren", next: "result_ugg_tel_ausgehend" },
-                    { text: "Schlechte Sprachqualität", next: "result_ugg_tel_qualität" }
-                ]
-            },
-
-            // ===== RESULTS =====
-
-            // EWE Results
-            result_ewe_ka_hdm_ok: {
-                result: {
-                    title: "✅ Router Online - Kundenseitiges Problem",
-                    steps: [
-                        "Kunde anrufen und Situation abklären",
-                        "Prüfen lassen: Alle Geräte offline? Einzelne Geräte?",
-                        "Router-Neustart durchführen lassen",
-                        "WLAN-Verbindung prüfen (SSID sichtbar? Passwort korrekt?)",
-                        "LAN-Verbindung testen (wenn möglich)",
-                        "Bei weiterhin NOK: Werksreset des Routers erwägen"
-                    ],
-                    ticket: "Ticket schließen mit: 'Router online, HDM verfügbar. Kundenseitige Verkabelung/Konfiguration geprüft. NOK behoben / Kunde informiert.'",
-                    tips: [
-                        "💡 HDM zeigt, dass Router mit Backend kommuniziert = Internet funktioniert grundsätzlich",
-                        "💡 Oft sind es WLAN-Probleme oder falsche Kabel"
-                    ]
-                }
-            },
-
-            result_ewe_ka_no_hdm: {
-                result: {
-                    title: "⚠️ Session aktiv, aber kein HDM",
-                    steps: [
-                        "Kunde anrufen",
-                        "Router-Neustart durchführen lassen (mind. 30 Sek. vom Strom)",
-                        "Nach 5 Min. erneut HDM prüfen",
-                        "Wenn HDM wieder da: Ticket schließen",
-                        "Wenn weiterhin kein HDM: Zum Router-Tausch eskalieren"
-                    ],
-                    ticket: "Bei Eskalation: 'Session vorhanden, aber kein HDM nach Reboot. Router defekt vermutet.'",
-                    warnings: [
-                        "⚠️ Keine Leitung-Entstörung notwendig, da Session läuft!",
-                        "⚠️ Nicht an Lineowner weiterleiten!"
-                    ]
-                }
-            },
-
-            result_ewe_ka_port_down: {
-                result: {
-                    title: "🔴 Port DOWN - Leitungsstörung",
-                    steps: [
-                        "Port-Reset im VitroConnect-Tool durchführen",
-                        "5 Minuten warten",
-                        "Status erneut prüfen",
-                        "Wenn weiterhin DOWN: Ticket an EWE/VitroConnect mit Techniker-Termin"
-                    ],
-                    ticket: "Störungsbeschreibung: 'Port DOWN nach Reset. Line-ID: [LineID]. Techniker-Termin erforderlich.'",
-                    tips: [
-                        "💡 Port DOWN = Problem in der Vermittlungsstelle oder auf der Leitung",
-                        "💡 Immer Port-Reset versuchen, bevor eskaliert wird!"
-                    ],
-                    contact: "☎️ Kunde anrufen für Terminvereinbarung (Techniker muss ggf. in Wohnung)"
-                }
-            },
-
-            result_ewe_ka_line_up: {
-                result: {
-                    title: "🔧 Line UP, aber keine Session",
-                    steps: [
-                        "Kunde anrufen",
-                        "Router-Zugangsdaten prüfen lassen (Benutzername/Passwort)",
-                        "Router-Neustart durchführen",
-                        "Wenn PPPoE-Fehler: Zugangsdaten neu eingeben lassen",
-                        "Alternative: Router-Werksreset + Neueinrichtung"
-                    ],
-                    ticket: "Bei NOK nach 2 Versuchen: 'Line UP, PPPoE-Authentifizierung fehlgeschlagen. Zugangsdaten geprüft. Router-Tausch empfohlen.'",
-                    tips: [
-                        "💡 Line UP = Leitung ist physisch OK",
-                        "💡 Problem liegt meist an falschen Zugangsdaten oder Router-Defekt"
-                    ]
-                }
-            },
-
-            result_ewe_ka_line_down: {
-                result: {
-                    title: "🔴 Line DOWN - Schwere Leitungsstörung",
-                    steps: [
-                        "Line-Reset im VitroConnect-Tool durchführen",
-                        "10 Minuten warten (DSL-Sync braucht Zeit)",
-                        "Status erneut prüfen",
-                        "Wenn weiterhin DOWN: Sofort an EWE/VitroConnect eskalieren"
-                    ],
-                    ticket: "Störungsbeschreibung: 'Line DOWN nach Reset. Keine Synchronisation. Line-ID: [LineID]. DRINGEND - Techniker-Termin erforderlich.'",
-                    warnings: [
-                        "⚠️ Line DOWN = Ernste Störung (Kabelbruch, Vermittlungsstelle)",
-                        "⚠️ Kunde kann NICHTS selbst tun - nur Techniker hilft!"
-                    ],
-                    contact: "☎️ Kunde anrufen: Techniker-Besuch zwingend notwendig"
-                }
-            },
-
-            // UGG Glasfaser Results
-            result_ugg_ka_ont_down: {
-                result: {
-                    title: "🔴 ONT DOWN - Glasfaser-Problem",
-                    steps: [
-                        "Port-Reset im VitroConnect-Tool durchführen",
-                        "5 Minuten warten",
-                        "ONT-Status erneut prüfen",
-                        "Wenn weiterhin DOWN: Ticket OHNE Termin an UGG"
-                    ],
-                    ticket: "Störungsbeschreibung: 'ONT DOWN nach Port-Reset. Line-ID: [LineID]. Keine Synchronisation zum OLT. Glasfaser-Leitung prüfen.'",
-                    tips: [
-                        "💡 ONT DOWN = Problem auf Glasfaser-Strecke oder im OLT",
-                        "💡 KEIN Techniker-Termin - UGG prüft erst Leitung remote!",
-                        "💡 Oft innerhalb 24h gelöst durch Backend-Fixes"
-                    ],
-                    info: "ℹ️ Kunde informieren: 'Störung auf Glasfaser-Leitung erkannt. Wird von Provider geprüft, kein Termin notwendig. Update folgt.'"
-                }
-            },
-
-            result_ugg_ka_no_session: {
-                result: {
-                    title: "🔧 ONT UP, aber keine PPPoE-Session",
-                    steps: [
-                        "Kunde anrufen",
-                        "Router-Zugangsdaten kontrollieren lassen",
-                        "Verkabelung prüfen: ONT LAN → Router WAN-Port?",
-                        "Router-Neustart durchführen",
-                        "ONT-Stromreset (30 Sek. vom Strom)",
-                        "Wenn weiterhin NOK: Port-Reset durchführen"
-                    ],
-                    ticket: "Wenn nach allen Schritten NOK: 'ONT UP, PPPoE-Fehler persistiert. Zugangsdaten und Verkabelung korrekt. Eskalation an UGG für Backend-Prüfung.'",
-                    tips: [
-                        "💡 ONT UP = Glasfaser ist OK",
-                        "💡 Problem meist: Falsche Zugangsdaten oder Router-Konfiguration",
-                        "💡 Seltener: Backend-Problem bei UGG"
-                    ]
-                }
-            },
-
-            result_ugg_ka_hdm_ok: {
-                result: {
-                    title: "✅ Router Online - Kundenseitiges Problem",
-                    steps: [
-                        "Kunde anrufen und Situation abklären",
-                        "Prüfen: Alle Geräte offline? Nur bestimmte?",
-                        "Router-Neustart durchführen lassen",
-                        "WLAN-Verbindung prüfen",
-                        "LAN-Test durchführen lassen",
-                        "Bei NOK: Werksreset erwägen"
-                    ],
-                    ticket: "Ticket schließen: 'Router online, HDM verfügbar. Kundenseitige Konfiguration geprüft. NOK behoben.'",
-                    tips: [
-                        "💡 HDM vorhanden = Internet funktioniert!",
-                        "💡 Problem liegt definitiv beim Kunden (Gerät/WLAN/Verkabelung)"
-                    ]
-                }
-            },
-
-            result_ugg_ka_no_hdm: {
-                result: {
-                    title: "⚠️ Session aktiv, aber kein HDM",
-                    steps: [
-                        "Kunde anrufen",
-                        "Router-Neustart (mind. 30 Sek. vom Strom)",
-                        "Nach 5 Min. HDM erneut prüfen",
-                        "Wenn HDM da: Ticket schließen",
-                        "Wenn nicht: Router-Tausch veranlassen"
-                    ],
-                    ticket: "Bei Eskalation: 'Session vorhanden, kein HDM nach Reboot. Router-Defekt vermutet. Tausch erforderlich.'",
-                    warnings: [
-                        "⚠️ NICHT an UGG eskalieren - Session läuft ja!",
-                        "⚠️ Router ist das Problem, nicht die Leitung!"
-                    ]
-                }
-            },
-
-            result_ugg_ka_direkt_ovk_fehlt: {
-                result: {
-                    title: "⚠️ ONT-Installationskennung fehlt/falsch",
-                    steps: [
-                        "ONT-Installationskennung (OVK) im VitroConnect-Tool prüfen",
-                        "Auf Router-Aufkleber schauen: 'Installations-ID' oder 'ONT S/N'",
-                        "Wenn abweichend: OVK im System korrigieren (dauert ~15 Min. bis aktiv)",
-                        "Router-Neustart durchführen lassen",
-                        "Nach 15 Min. Session-Status prüfen"
-                    ],
-                    ticket: "Wenn OVK korrigiert: 'ONT-Installationskennung korrigiert. Session aufgebaut. Ticket geschlossen.'",
-                    tips: [
-                        "💡 Bei Direktanschluss (FB5590/5530) MUSS die OVK stimmen!",
-                        "💡 Router verhält sich wie ein ONT - daher wird S/N benötigt",
-                        "💡 Falsche OVK = Router wird vom OLT nicht erkannt"
-                    ],
-                    warnings: [
-                        "⚠️ OVK-Änderung dauert bis zu 15 Minuten!",
-                        "⚠️ Kunde muss Router danach neu starten!"
-                    ]
-                }
-            },
-
-            result_ugg_ka_direkt_session_ok: {
-                result: {
-                    title: "✅ Direktanschluss funktioniert",
-                    steps: [
-                        "Kunde anrufen",
-                        "Problem genauer abfragen",
-                        "Wie bei normalem Router vorgehen (siehe 'Router Online')",
-                        "Ticket schließen nach Entstörung"
-                    ],
-                    ticket: "Ticket schließen: 'Direktanschluss (FB5590/5530) funktioniert. OVK korrekt, Session aktiv. Kundenseitiges Problem behoben.'",
-                    tips: [
-                        "💡 Direktanschluss funktioniert wie normaler Router",
-                        "💡 Nur Unterschied: OVK muss stimmen"
-                    ]
-                }
-            },
-
-            result_ugg_ka_direkt_no_session: {
-                result: {
-                    title: "🔧 Direktanschluss: Keine Session",
-                    steps: [
-                        "OVK im System prüfen (siehe 'OVK fehlt')",
-                        "Wenn OVK korrekt: Port-Reset durchführen",
-                        "15 Minuten warten",
-                        "Router-Neustart beim Kunden",
-                        "Wenn weiterhin NOK: An UGG eskalieren"
-                    ],
-                    ticket: "Eskalation: 'Direktanschluss FB5590/5530. OVK korrekt hinterlegt. Keine PPPoE-Session nach Port-Reset. Backend-Prüfung erforderlich.'",
-                    tips: [
-                        "💡 Bei Direktanschluss öfter Backend-Probleme",
-                        "💡 OVK muss 100% korrekt sein - sonst keine Chance!"
-                    ]
-                }
-            },
-
-            // Sporadisch Results
-            result_ewe_sporadisch_zeitabhängig: {
-                result: {
-                    title: "📊 Zeitabhängige Ausfälle",
-                    steps: [
-                        "Log-Analyse im VitroConnect-Tool (Sync-Abbrüche?)",
-                        "Zeiten mit Kunde abgleichen",
-                        "Wenn Muster erkennbar: An EWE mit detaillierter Zeitangabe",
-                        "Kunde bitten, Störungszeiten zu dokumentieren"
-                    ],
-                    ticket: "Störungsbeschreibung: 'Sporadische Ausfälle zu folgenden Zeiten: [Zeiten]. Sync-Abbrüche im Log erkennbar. Leitungsprüfung erforderlich.'",
-                    tips: [
-                        "💡 Zeitabhängig deutet auf externe Störquelle hin (z.B. Nachbar, Stromnetz)",
-                        "💡 Techniker-Termin meist erforderlich zur Messung vor Ort"
-                    ]
-                }
-            },
-
-            result_ewe_sporadisch_unregelmäßig: {
-                result: {
-                    title: "🔄 Unregelmäßige Ausfälle",
-                    steps: [
-                        "Kunde nach Häufigkeit fragen (täglich? wöchentlich?)",
-                        "Router-Logs sichern lassen (falls möglich)",
-                        "Verkabelung prüfen lassen (lose Kabel?)",
-                        "Bei häufig: An EWE mit 'Intermittierend'-Vermerk"
-                    ],
-                    ticket: "Störungsbeschreibung: 'Sporadische Ausfälle ohne Muster. Häufigkeit: [X]. Verkabelung geprüft OK. Leitungsmessung erforderlich.'",
-                    tips: [
-                        "💡 Schwierig zu analysieren - Kunde muss mithelfen",
-                        "💡 Oft hilft nur Langzeit-Monitoring durch Lineowner"
-                    ]
-                }
-            },
-
-            result_ugg_sporadisch_sync: {
-                result: {
-                    title: "🔴 Sync-Abbrüche erkennbar",
-                    steps: [
-                        "Timestamps der Abbrüche notieren",
-                        "Kunde fragen: ONT-LEDs blinken während Ausfall?",
-                        "Wenn ja: Glasfaser-Problem → An UGG OHNE Termin",
-                        "Wenn nein: Router-Problem → Router-Tausch"
-                    ],
-                    ticket: "An UGG: 'Regelmäßige Sync-Abbrüche. Timestamps: [Zeiten]. ONT-Status während Ausfall: [UP/DOWN]. Leitungsprüfung erforderlich.'",
-                    tips: [
-                        "💡 Sync-Abbrüche im Log = Beweisbar!",
-                        "💡 UGG kann dann gezielt die Leitung prüfen"
-                    ]
-                }
-            },
-
-            result_ugg_sporadisch_stabil: {
-                result: {
-                    title: "✅ Leitung stabil, kein Log-Eintrag",
-                    steps: [
-                        "Mit Kunde telefonisch Situation durchgehen",
-                        "Was genau passiert? (Komplett offline? Nur langsam?)",
-                        "WLAN-Probleme ausschließen (5GHz vs. 2.4GHz)",
-                        "Andere Geräte testen lassen",
-                        "Bei Router-Verdacht: Tausch veranlassen"
-                    ],
-                    ticket: "Ticket schließen: 'Leitung laut Monitoring stabil. Keine Sync-Abbrüche. Kundenseitige Überprüfung durchgeführt. Problem nicht reproduzierbar.'",
-                    tips: [
-                        "💡 Wenn keine Sync-Abbrüche im Log: Meist KEIN Leitungsproblem",
-                        "💡 Oft WLAN-Reichweite oder Geräte-Problem"
-                    ]
-                }
-            },
-
-            // Anschaltung Results
-            result_ewe_anschaltung_aktiv: {
-                result: {
-                    title: "🆕 Anschaltung aktiv",
-                    steps: [
-                        "Port- und Line-Status wie bei Komplettausfall prüfen",
-                        "Wenn UP: Kunde Router-Zugangsdaten einrichten lassen",
-                        "Schritt-für-Schritt telefonisch begleiten",
-                        "Nach erfolgreicher Einrichtung: Ticket schließen"
-                    ],
-                    ticket: "Ticket schließen: 'Neuanschaltung erfolgreich. Leitung aktiv. Router konfiguriert. Kunde online.'",
-                    tips: [
-                        "💡 Bei Neuanschaltung sind Zugangsdaten oft das Problem",
-                        "💡 Geduld haben - Kunde kennt Router oft noch nicht!"
-                    ]
-                }
-            },
-
-            result_ewe_anschaltung_offen: {
-                result: {
-                    title: "⏳ Anschaltung noch nicht abgeschlossen",
-                    steps: [
-                        "Schalttermin im System prüfen",
-                        "Kunde über Status informieren",
-                        "Wenn Schalttermin überschritten: An EWE eskalieren",
-                        "Wenn Termin noch offen: Ticket auf 'Wartend' setzen"
-                    ],
-                    ticket: "Bei Eskalation: 'Schalttermin [Datum] überschritten. Leitung weiterhin nicht aktiv. Prüfung und Eskalation erforderlich.'",
-                    info: "ℹ️ Kunde informieren: 'Schaltung ist für [Datum] geplant. Aktuell noch in Bearbeitung beim Lineowner.'"
-                }
-            },
-
-            result_ugg_anschaltung_ont_ok: {
-                result: {
-                    title: "✅ ONT zeigt LEDs - Hardware OK",
-                    steps: [
-                        "ONT-Status im VitroConnect-Tool prüfen (siehe Komplettausfall)",
-                        "Wenn ONT UP: Router-Konfiguration mit Kunde durchgehen",
-                        "Zugangsdaten einrichten",
-                        "Nach Erfolg: Ticket schließen"
-                    ],
-                    ticket: "Ticket schließen: 'Neuanschaltung Glasfaser erfolgreich. ONT online, Router konfiguriert. Kunde online.'",
-                    tips: [
-                        "💡 LEDs am ONT = Hardware funktioniert",
-                        "💡 Dann wie normale Entstörung vorgehen"
-                    ]
-                }
-            },
-
-            result_ugg_anschaltung_ont_tot: {
-                result: {
-                    title: "🔌 ONT ohne LEDs - Hardware-Problem",
-                    steps: [
-                        "Kunde Stromversorgung prüfen lassen (Netzteil eingesteckt?)",
-                        "Anderes Netzteil testen lassen (falls vorhanden)",
-                        "Wenn weiterhin tot: Defekter ONT → Austausch veranlassen",
-                        "Techniker-Termin für ONT-Tausch"
-                    ],
-                    ticket: "Störungsbeschreibung: 'Neuanschaltung. ONT zeigt keine LEDs. Stromversorgung geprüft. ONT defekt vermutet. Austausch erforderlich.'",
-                    warnings: [
-                        "⚠️ ONT gehört dem Lineowner - WIR tauschen nicht!",
-                        "⚠️ Techniker-Termin zwingend notwendig"
-                    ],
-                    contact: "☎️ Termin mit Kunde vereinbaren für ONT-Tausch"
-                }
-            },
-
-            result_ugg_anschaltung_direkt: {
-                result: {
-                    title: "🔧 Direktanschluss-Neuanschaltung",
-                    steps: [
-                        "OVK im System prüfen (Router S/N auf Aufkleber)",
-                        "Wenn nicht hinterlegt: OVK eintragen",
-                        "15 Minuten warten",
-                        "Router-Zugangsdaten mit Kunde konfigurieren",
-                        "Nach Erfolg: Ticket schließen"
-                    ],
-                    ticket: "Ticket schließen: 'Neuanschaltung Direktanschluss FB5590/5530. OVK korrekt hinterlegt. Router konfiguriert. Kunde online.'",
-                    tips: [
-                        "💡 Bei Neuanschaltung ist OVK oft noch nicht im System!",
-                        "💡 Immer als erstes prüfen bei Direktanschluss!"
-                    ],
-                    warnings: [
-                        "⚠️ OVK-Eintragung dauert bis zu 15 Minuten!",
-                        "⚠️ Kunde muss warten, bevor es funktioniert"
-                    ]
-                }
-            },
-
-            // Performance Results
-            result_ewe_perf_speed: {
-                result: {
-                    title: "🐌 Niedrige Geschwindigkeit",
-                    steps: [
-                        "Gebuchte Geschwindigkeit vs. Line-Speed im Tool prüfen",
-                        "Speedtest mit Kunde durchführen (LAN-Kabel!)",
-                        "WLAN ausschließen (oft Ursache für langsam)",
-                        "Wenn LAN auch langsam: Line-Speed prüfen",
-                        "Bei niedrigem Line-Speed: An EWE eskalieren"
-                    ],
-                    ticket: "Bei Eskalation: 'Performance-Problem. Gebuchte Geschwindigkeit: [X] Mbit/s. Line-Speed: [Y] Mbit/s. Speedtest LAN: [Z] Mbit/s. Leitungsprüfung erforderlich.'",
-                    tips: [
-                        "💡 IMMER LAN-Test machen - WLAN ist meist der Flaschenhals!",
-                        "💡 Line-Speed < 80% der gebuchten Speed = Leitungsproblem"
-                    ],
-                    info: "ℹ️ Speedtest-Empfehlung: speedtest.net oder fast.com, mehrfach testen!"
-                }
-            },
-
-            result_ewe_perf_latency: {
-                result: {
-                    title: "📶 Hohe Latenz / Paketverluste",
-                    steps: [
-                        "Mit Kunde Ping-Test durchführen (zu 8.8.8.8)",
-                        "Paketverluste erkennbar?",
-                        "Wenn ja: An EWE mit 'Intermittierend'-Vermerk",
-                        "Wenn nein, aber hohe Latenz: Leitungsprüfung"
-                    ],
-                    ticket: "Störungsbeschreibung: 'Hohe Latenz [X ms] / Paketverluste [Y%]. Ping-Test durchgeführt. Leitungsqualität unzureichend.'",
-                    tips: [
-                        "💡 Paketverluste = Ernstes Problem, immer eskalieren!",
-                        "💡 Latenz >50ms bei DSL = Auffällig"
-                    ]
-                }
-            },
-
-            result_ugg_perf_tarif_ok: {
-                result: {
-                    title: "🐌 Tarif korrekt, trotzdem langsam",
-                    steps: [
-                        "Speedtest mit Kunde (LAN!)",
-                        "WLAN ausschließen",
-                        "Bei Glasfaser: Volle Geschwindigkeit sollte ankommen",
-                        "Wenn deutlich weniger: Port-Reset durchführen",
-                        "Wenn weiterhin langsam: An UGG eskalieren"
-                    ],
-                    ticket: "Bei Eskalation: 'Glasfaser Performance-Problem. Tarif: [X] Mbit/s. Speedtest LAN: [Y] Mbit/s. Port-Reset durchgeführt ohne Erfolg. Backend-Prüfung erforderlich.'",
-                    tips: [
-                        "💡 Glasfaser sollte IMMER volle Geschwindigkeit liefern!",
-                        "💡 Wenn nicht: Backend-Problem oder Router-Defekt"
-                    ],
-                    warnings: [
-                        "⚠️ Bei Glasfaser gibt es keine 'Leitungsdämpfung' wie DSL!",
-                        "⚠️ Entweder volle Speed oder gar nichts"
-                    ]
-                }
-            },
-
-            result_ugg_perf_tarif_falsch: {
-                result: {
-                    title: "⚠️ Tarif nicht korrekt im System",
-                    steps: [
-                        "Vertrag im System prüfen",
-                        "Mit VitroConnect-Tool abgleichen",
-                        "Wenn abweichend: Tarif-Korrektur veranlassen",
-                        "Nach Korrektur: Port-Reset",
-                        "Speedtest mit Kunde nach 15 Min."
-                    ],
-                    ticket: "Ticket schließen nach Korrektur: 'Tarif im System korrigiert. Port-Reset durchgeführt. Geschwindigkeit jetzt korrekt.'",
-                    tips: [
-                        "💡 Falsche Tarif-Hinterlegung = häufiger Fehler bei UGG!",
-                        "💡 Immer mit Vertrag abgleichen"
-                    ]
-                }
-            },
-
-            // Telefonie Results
-            result_ewe_tel_eingehend: {
-                result: {
-                    title: "📞 Eingehende Anrufe funktionieren nicht",
-                    steps: [
-                        "Rufnummer im System prüfen (korrekt hinterlegt?)",
-                        "Telefon-Registrierung im Router prüfen",
-                        "Test: Kunde selbst anrufen",
-                        "Wenn besetzt/nicht erreichbar: Router-Neustart",
-                        "Wenn weiterhin NOK: An VoIP-Team eskalieren"
-                    ],
-                    ticket: "Bei Eskalation: 'Eingehende Telefonie NOK. Rufnummer: [Nummer]. Registrierung: [OK/NOK]. Test-Anruf durchgeführt: [Ergebnis].'",
-                    tips: [
-                        "💡 Oft ist Telefon-Registrierung im Router das Problem",
-                        "💡 Router-Neustart hilft in 70% der Fälle!"
-                    ]
-                }
-            },
-
-            result_ewe_tel_ausgehend: {
-                result: {
-                    title: "📞 Ausgehende Anrufe funktionieren nicht",
-                    steps: [
-                        "SIP-Zugangsdaten im Router prüfen",
-                        "Test: Kunde eine bekannte Nummer anrufen lassen",
-                        "Fehlercode? (z.B. '403 Forbidden', '404 Not Found')",
-                        "Router-Neustart",
-                        "Wenn weiterhin NOK: An VoIP-Team"
-                    ],
-                    ticket: "Bei Eskalation: 'Ausgehende Telefonie NOK. SIP-Fehlercode: [Code]. Router-Neustart ohne Erfolg. VoIP-Prüfung erforderlich.'",
-                    tips: [
-                        "💡 SIP-Fehler deuten auf Registrierungs-Problem hin",
-                        "💡 Seltener: Backend-Problem bei VoIP-Provider"
-                    ]
-                }
-            },
-
-            result_ewe_tel_qualität: {
-                result: {
-                    title: "📞 Schlechte Sprachqualität",
-                    steps: [
-                        "Art der Störung: Echo? Rauschen? Abbrüche?",
-                        "Andere Telefon testen lassen (Hardware-Defekt?)",
-                        "Wenn Internet-Performance schlecht: Zuerst entstören",
-                        "Wenn Internet OK: An VoIP-Team mit Beschreibung"
-                    ],
-                    ticket: "Bei Eskalation: 'Sprachqualität mangelhaft. Symptome: [Echo/Rauschen/Abbrüche]. Hardware-Tausch durchgeführt: [Ja/Nein]. Internet-Performance: [OK/NOK].'",
-                    tips: [
-                        "💡 Sprachqualität hängt oft mit Internet-Performance zusammen",
-                        "💡 Erst Internet entstören, dann Telefonie!"
-                    ]
-                }
-            },
-
-            result_ugg_tel_eingehend: {
-                result: {
-                    title: "📞 Eingehende Anrufe NOK (Glasfaser)",
-                    steps: [
-                        "Wie bei EWE vorgehen (siehe dort)",
-                        "Zusätzlich: ONT-Status prüfen (falls vorhanden)",
-                        "VoIP läuft über Internet - also Internet-Check first!"
-                    ],
-                    ticket: "Bei Eskalation wie EWE, zusätzlich: 'Anschlusstyp: UGG Glasfaser. ONT-Status: [UP/DOWN].'",
-                    tips: [
-                        "💡 Bei Glasfaser gelten gleiche VoIP-Regeln wie DSL",
-                        "💡 Internet muss funktionieren, sonst keine Telefonie!"
-                    ]
-                }
-            },
-
-            result_ugg_tel_ausgehend: {
-                result: {
-                    title: "📞 Ausgehende Anrufe NOK (Glasfaser)",
-                    steps: [
-                        "Wie bei EWE vorgehen (siehe dort)",
-                        "Internet-Check durchführen",
-                        "Bei Internet OK: An VoIP-Team"
-                    ],
-                    ticket: "Bei Eskalation wie EWE, zusätzlich: 'Anschlusstyp: UGG Glasfaser.'",
-                    tips: [
-                        "💡 Gleiches Vorgehen wie bei DSL"
-                    ]
-                }
-            },
-
-            result_ugg_tel_qualität: {
-                result: {
-                    title: "📞 Sprachqualität schlecht (Glasfaser)",
-                    steps: [
-                        "Wie bei EWE vorgehen",
-                        "Bei Glasfaser sollte Qualität eigentlich perfekt sein",
-                        "Wenn nicht: Verdacht auf Router-Problem oder VoIP-Backend"
-                    ],
-                    ticket: "Bei Eskalation wie EWE.",
-                    tips: [
-                        "💡 Glasfaser = Beste Qualität, sollte keine Probleme geben",
-                        "💡 Wenn doch: Meist Router-Defekt"
-                    ]
-                }
-            }
+        // ===== GLOBALE VARIABLEN =====
+        let currentStep = 1;
+        let maxSteps = 10;
+        let history = ['step1']; // Für Back-Button
+        
+        let data = {
+            lineId: '',
+            lineOwner: '',
+            hasActivity: null,
+            hasAnschaltdatum: null,
+            ticketType: '',
+            routerModel: '',
+            verkabelung: '',
+            ontStatus: '',
+            verbindung: '',
+            portreset: ''
         };
 
-        // State Management
-        let currentStep = 'start';
-        let history = [];
-
-        // Navigation Functions
-        function navigate(nextStep) {
-            history.push(currentStep);
-            currentStep = nextStep;
-            render();
+        // ===== PROGRESS BAR UPDATE =====
+        function updateProgress() {
+            const progress = (currentStep / maxSteps) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressText').textContent = `Schritt ${currentStep} von ${maxSteps}`;
         }
 
-        function goBack() {
-            if (history.length > 0) {
-                currentStep = history.pop();
-                render();
-            }
-        }
-
-        function restart() {
-            currentStep = 'start';
-            history = [];
-            render();
-        }
-
-        // Render Function
-        function render() {
-            const content = document.getElementById('content');
-            const actionButtons = document.getElementById('actionButtons');
-            const breadcrumb = document.getElementById('breadcrumb');
-            const step = decisionTree[currentStep];
-
-            // Update Progress Bar
-            const progress = (history.length / 5) * 100;
-            document.getElementById('progressBar').style.width = Math.min(progress, 100) + '%';
-
-            // Update Breadcrumb
-            breadcrumb.textContent = `Schritt ${history.length + 1}`;
-
-            // Show/Hide Action Buttons
-            if (history.length > 0) {
-                actionButtons.classList.remove('hidden');
-            } else {
-                actionButtons.classList.add('hidden');
-            }
-
-            // Render Content
-            if (step.result) {
-                renderResult(step.result);
-            } else {
-                renderQuestion(step);
-            }
-        }
-
-        function renderQuestion(step) {
-            const content = document.getElementById('content');
-            
-            let html = `
-                <div class="question-box">
-                    <h2>${step.question}</h2>
-                    <div class="options">
-            `;
-
-            step.options.forEach(option => {
-                html += `
-                    <button class="option-btn" onclick="navigate('${option.next}')">
-                        ${option.text}
-                    </button>
-                `;
+        // ===== STEP NAVIGATION =====
+        function showStep(stepId) {
+            // Alle Steps verstecken
+            document.querySelectorAll('.step').forEach(step => {
+                step.classList.remove('active');
             });
-
-            html += `
-                    </div>
-                </div>
-            `;
-
-            content.innerHTML = html;
-        }
-
-        function renderResult(result) {
-            const content = document.getElementById('content');
             
-            let html = `
-                <div class="result-box">
-                    <h2>${result.title}</h2>
-            `;
-
-            // Steps
-            if (result.steps) {
-                html += `
-                    <div class="result-section">
-                        <h3>📋 Handlungsschritte:</h3>
-                        <ol>
-                `;
-                result.steps.forEach(step => {
-                    html += `<li>${step}</li>`;
-                });
-                html += `
-                        </ol>
-                    </div>
-                `;
+            // Gewünschten Step zeigen
+            document.getElementById(stepId).classList.add('active');
+            
+            // History updaten
+            if (history[history.length - 1] !== stepId) {
+                history.push(stepId);
             }
-
-            // Ticket Description
-            if (result.ticket) {
-                html += `
-                    <div class="result-section">
-                        <h3>📝 Ticket-Bearbeitung:</h3>
-                        <p>${result.ticket}</p>
-                    </div>
-                `;
-            }
-
-            // Tips
-            if (result.tips) {
-                result.tips.forEach(tip => {
-                    html += `
-                        <div class="tip-box">
-                            <strong>${tip}</strong>
-                        </div>
-                    `;
-                });
-            }
-
-            // Warnings
-            if (result.warnings) {
-                result.warnings.forEach(warning => {
-                    html += `
-                        <div class="warning-box">
-                            <strong>${warning}</strong>
-                        </div>
-                    `;
-                });
-            }
-
-            // Info
-            if (result.info) {
-                html += `
-                    <div class="info-box">
-                        <strong>${result.info}</strong>
-                    </div>
-                `;
-            }
-
-            // Contact
-            if (result.contact) {
-                html += `
-                    <div class="info-box">
-                        <strong>${result.contact}</strong>
-                    </div>
-                `;
-            }
-
-            html += `
-                </div>
-                <div class="action-buttons">
-                    <button class="btn btn-copy" onclick="copyResult()">📋 Kopieren</button>
-                    <button class="btn btn-primary" onclick="restart()">🔄 Neue Störung</button>
-                </div>
-            `;
-
-            content.innerHTML = html;
+            
+            // Back-Button anzeigen/verstecken
+            document.getElementById('backButton').style.display = 
+                history.length > 1 ? 'block' : 'none';
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function copyResult() {
-            const resultBox = document.querySelector('.result-box');
-            const text = resultBox.innerText;
-            navigator.clipboard.writeText(text).then(() => {
-                alert('✅ Ergebnis in Zwischenablage kopiert!');
-            });
+        function nextStep(stepId) {
+            currentStep++;
+            updateProgress();
+            showStep(stepId);
         }
 
-        // Initial Render
-        render();
-    </script>
-</body>
-</html>
+        function previousStep() {
+            if (history.length > 1) {
+                history.pop(); // Aktuellen Step entfernen
+                const prevStep = history[history.length - 1];
+                currentStep--;
+                updateProgress();
+                showStep(prevStep);
+            }
+        }
+
+        // ===== STEP 1: LineOwner =====
+        function setLineOwner(owner) {
+            data.lineOwner = owner;
+            data.lineId = document.getElementById('lineId').value;
+            nextStep('step2');
+        }
+
+        // ===== STEP 2: Aktivität =====
+        function setActivity(activity) {
+            data.hasActivity = activity;
+            
+            if (activity === 'yes') {
+                // Hat Aktivität → Störung → Störungstyp wählen
+                nextStep('step3');
+            } else if (activity === 'no') {
+                // Keine Aktivität → Anschaltdatum prüfen
+                nextStep('step2b');
+            } else {
+                // Unsicher → Kunde kontaktieren
+                showStep('final-contact');
+            }
+        }
+
+        // ===== STEP 2b: Anschaltdatum =====
+        function setAnschaltdatum(hasDate) {
+            data.hasAnschaltdatum = hasDate;
+            
+            if (hasDate === 'yes') {
+                // Anschaltdatum bekannt → Zu Anschaltung
+                data.ticketType = 'anschaltung';
+                nextStep('step4-router');
+            } else {
+                // Kein Datum → Kunde kontaktieren
+                showStep('final-contact');
+            }
+        }
+
+        // ===== STEP 3: Störungstyp =====
+        function setTicketType(type) {
+            data.ticketType = type;
+            
+            if (type === 'anschaltung') {
+                nextStep('step4-router');
+            } else if (type === 'komplettausfall') {
+                nextStep('step10-komplettausfall');
+            } else if (type === 'sporadisch') {
+                nextStep('step11-sporadisch');
+            } else if (type === 'performance') {
+                nextStep('step12-performance');
+            }
+        }
+
+        // ===== STEP 4: Router-Modell =====
+        function setRouterModel(model) {
+            data.routerModel = model;
+            nextStep('step5-verkabelung');
+        }
+
+        // ===== STEP 5: Verkabelung =====
+        function checkVerkabelung(type) {
+            data.verkabelung = type;
+            nextStep('step6-ont');
+        }
+
+        // ===== STEP 6: ONT Status =====
+        function setONTStatus(status) {
+            data.ontStatus = status;
+            
+            if (status === 'kein-strom') {
+                // Kein Strom → Kunde muss Strom prüfen
+                alert('⚠️ Kunde muss Stromversorgung am ONT prüfen!\n\nDanach Troubleshooter erneut durchlaufen.');
+                return;
+            }
+            
+            // Weiter zur Router-Konfiguration
+            if (data.routerModel === 'fritzbox') {
+                nextStep('step7-fritzbox');
+            } else if (data.routerModel === 'homebox') {
+                nextStep('step7-homebox');
+            } else {
+                // Dritthersteller-Router
+                alert('⚠️ Dritthersteller-Router:\n\nBitte Bedienungsanleitung des Routers zur Konfiguration nutzen.\n\nAllgemein: o2 als Anbieter wählen, Glasfaser/FTTH als Anschlussart.');
+                nextStep('step8-verbindung');
+            }
+        }
+
+        // ===== STEP 8: Verbindung =====
+        function setVerbindung(status) {
+            data.verbindung = status;
+            
+            if (status === 'ok') {
+                // Verbindung OK → Erfolg!
+                generateSuccessDocumentation();
+                showStep('final-success');
+            } else {
+                // Verbindung NOK → Portreset
+                nextStep('step9-portreset');
+            }
+        }
+
+        // ===== STEP 9: Portreset =====
+        function setPortreset(status) {
+            data.portreset = status;
+            
+            if (status === 'ok') {
+                // Nach Portreset OK → Erfolg!
+                generateSuccessDocumentation();
+                showStep('final-success');
+            } else {
+                // Nach Portreset NOK → STM
+                generateSTMDocumentation('anschaltung');
+                showStep('final-stm');
+            }
+        }
+
+        // ===== STEP 10: Komplettausfall =====
+        function komplettausfallResolved() {
+            generateSuccessDocumentation();
+            showStep('final-success');
+        }
+
+        function komplettausfallEskalieren() {
+            generateSTMDocumentation('komplettausfall');
+            showStep('final-stm');
+        }
+
+        // ===== STEP 11: Sporadisch =====
+        function sporadischWFC() {
+            generateWFCDocumentation('sporadisch');
+            showStep('final-wfc');
+        }
+
+        function sporadischEskalieren() {
+            generateSTMDocumentation('sporadisch');
+            showStep('final-stm');
+        }
+
+        // ===== STEP 12: Performance =====
+        function checkPerformance() {
+            const tarif = parseInt(document.getElementById('tarif').value);
+            const download = parseFloat(document.getElementById('download').value);
+            const upload = parseFloat(document.getElementById('upload').value);
+            
+            if (!download || !upload) {
+                alert('⚠️ Bitte beide Werte eingeben!');
+                return;
+            }
+            
+            // Schwellenwerte berechnen
+            let minDownload, minUpload;
+            
+            switch(tarif) {
+                case 50:
+                    minDownload = 25;
+                    minUpload = 5;
+                    break;
+                case 100:
+                    minDownload = 50;
+                    minUpload = 20;
+                    break;
+                case 250:
+                    minDownload = 125;
+                    minUpload = 20;
+                    break;
+                case 1000:
+                    minDownload = 500;
+                    minUpload = 100;
+                    break;
+            }
+            
+            const downloadOK = download >= minDownload;
+            const uploadOK = upload >= minUpload;
+            
+            const resultDiv = document.getElementById('performanceResult');
+            
+            if (downloadOK && uploadOK) {
+                resultDiv.innerHTML = `
+                    <div class="info-box success" style="margin-top: 20px;">
+                        <strong>✅ Werte im grünen Bereich!</strong><br><br>
+                        Download: ${download} Mbit/s (Min: ${minDownload} Mbit/s) ✅<br>
+                        Upload: ${upload} Mbit/s (Min: ${minUpload} Mbit/s) ✅<br><br>
+                        <strong>→ Keine Störung!</strong> Kunde hat die gebuchte Leistung.
+                    </div>
+                    <div class="button-group" style="margin-top: 20px;">
+                        <button class="btn-primary btn" onclick="performanceResolved()">
+                            ✅ Ticket schließen
+                        </button>
+                    </div>
+                `;
+            } else {
+                resultDiv.innerHTML = `
+                    <div class="info-box error" style="margin-top: 20px;">
+                        <strong>❌ Werte UNTER Schwellenwert!</strong><br><br>
+                        Download: ${download} Mbit/s (Min: ${minDownload} Mbit/s) ${downloadOK ? '✅' : '❌'}<br>
+                        Upload: ${upload} Mbit/s (Min: ${minUpload} Mbit/s) ${uploadOK ? '✅' : '❌'}<br><br>
+                        <strong>→ STM an LineOwner erstellen!</strong>
+                    </div>
+                    <div class="button-group" style="margin-top: 20px;">
+                        <button class="btn-primary btn" onclick="performanceEskalieren(${download}, ${upload}, ${minDownload}, ${minUpload})">
+                            📋 STM erstellen
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        function performanceResolved() {
+            generateSuccessDocumentation();
+            showStep('final-success');
+        }
+
+        function performanceEskalieren(download, upload, minDownload, minUpload) {
+            data.performanceData = { download, upload, minDownload, minUpload };
+            generateSTMDocumentation('performance');
+            showStep('final-stm');
+        }
+
+        // ===== DOKUMENTATION GENERIEREN =====
+        function generateSuccessDocumentation() {
+            const doc = `
+=== TICKET ERFOLGREICH BEARBEITET ===
+
+LineOwner: ${data.lineOwner}
+${data.lineId ? 'LineID: ' + data.lineId : ''}
+Ticket-Typ: ${data.ticketType}
+
+Durchgeführte Maßnahmen:
+${data.routerModel ? '- Router konfiguriert (' + data.routerModel + ')' : ''}
+${data.ontStatus ? '- ONT Status geprüft: ' + data.ontStatus : ''}
+${data.portreset === 'ok' ? '- Portreset durchgeführt (erfolgreich)' : ''}
+- Verbindung erfolgreich hergestellt
+
+Kunde ist online und zufrieden.
+Ticket kann geschlossen werden.
+
+${new Date().toLocaleString('de-DE')}
+            `.trim();
+            
+            document.getElementById('finalDocumentation').textContent = doc;
+        }
+
+        function generateWFCDocumentation(type) {
+            let doc = '';
+            
+            if (type === 'sporadisch') {
+                const kundeErreicht = confirm('Kunde erreicht? OK = Ja, Abbrechen = Nein');
+                
+                doc = `
+=== TICKET INS WFC ===
+
+LineOwner: ${data.lineOwner}
+${data.lineId ? 'LineID: ' + data.lineId : ''}
+
+Kunde ${kundeErreicht ? 'erreicht' : 'nicht erreicht'}.
+
+Durchgeführte Maßnahmen:
+- Portreset durchgeführt
+- 171 LAC Log geprüft
+
+Kunde soll Anschluss für 24-48h auf weitere Abbrüche beobachten.
+
+${kundeErreicht ? 
+'Wenn weiterhin NOK: STM an LineOwner.' :
+'Wenn weiterhin NOK: Neuen Termin vereinbaren, Ticket als Reklamation an LineOwner.'}
+
+Wiedervorlage: ${new Date(Date.now() + 48*60*60*1000).toLocaleDateString('de-DE')}
+
+${new Date().toLocaleString('de-DE')}
+                `.trim();
+            }
+            
+            document.getElementById('wfcDocumentation').textContent = doc;
+        }
+
+        function generateSTMDocumentation(type) {
+            document.getElementById('stmLineOwner').textContent = data.lineOwner;
+            document.getElementById('stmLineOwner2').textContent = data.lineOwner;
+            
+            let doc = '';
+            let termin = '';
+            
+            if (type === 'anschaltung') {
+                termin = 'OHNE Termin';
+                doc = `
+=== STM AN ${data.lineOwner.toUpperCase()} ===
+
+Anschaltung - Kein Signal am ONT
+
+LineID: ${data.lineId || '[Hier eintragen]'}
+
+Sachverhalt:
+- FTTH-Anschaltung
+- Router konfiguriert (${data.routerModel})
+- ONT Status: ${data.ontStatus}
+- Portreset + Stromreset durchgeführt
+- Keine Verbindung herstellbar
+
+Bitte Leitung prüfen und Signal schalten.
+
+${new Date().toLocaleString('de-DE')}
+                `.trim();
+            } else if (type === 'komplettausfall') {
+                termin = 'MIT Termin (in Absprache mit Kunde)';
+                doc = `
+=== STM AN ${data.lineOwner.toUpperCase()} ===
+
+Komplettausfall - Kein Internet
+
+LineID: ${data.lineId || '[Hier eintragen]'}
+
+Sachverhalt:
+- Kunde komplett offline seit [Datum eintragen]
+- ONT Status geprüft: [Status eintragen]
+- Router neu gestartet
+- Portreset durchgeführt
+- Keine Verbindung herstellbar
+
+Bitte Leitung prüfen.
+
+Termin: [Mit Kunde vereinbaren]
+
+${new Date().toLocaleString('de-DE')}
+                `.trim();
+            } else if (type === 'sporadisch') {
+                termin = 'MIT Termin (in Absprache mit Kunde)';
+                doc = `
+=== STM AN ${data.lineOwner.toUpperCase()} ===
+
+Sporadische Verbindungsabbrüche
+
+LineID: ${data.lineId || '[Hier eintragen]'}
+
+Sachverhalt:
+- Verbindung bricht wiederholt ab
+- 171 LAC Fehlercode: [Code eintragen]
+- Portreset durchgeführt
+- Problem besteht weiterhin
+
+Bitte Leitung auf Störungen prüfen.
+
+Termin: [Mit Kunde vereinbaren]
+
+${new Date().toLocaleString('de-DE')}
+                `.trim();
+            } else if (type === 'performance') {
+                const perf = data.performanceData;
+                termin = 'MIT Termin (in Absprache mit Kunde)';
+                doc = `
+=== STM AN ${data.lineOwner.toUpperCase()} ===
+
+Performance unter Schwellenwert
+
+LineID: ${data.lineId || '[Hier eintragen]'}
+
+Sachverhalt:
+- Speedtest per LAN durchgeführt
+- Download: ${perf.download} Mbit/s (Min: ${perf.minDownload} Mbit/s)
+- Upload: ${perf.upload} Mbit/s
